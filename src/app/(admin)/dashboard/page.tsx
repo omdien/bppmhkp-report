@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ResumeEkspor, ResumeEksport } from "@/components/dashboard/ekspor/ResumeEkspor";
-import MonthlyTarget from "@/components/ecommerce/MonthlyTarget";
-import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
+import { ResumeEkspor } from "@/components/dashboard/ekspor/ResumeEkspor";
+// import MonthlyTarget from "@/components/ecommerce/MonthlyTarget";
+// import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
 // import StatisticsChart from "@/components/ecommerce/StatisticsChart";
 // import DemographicCard from "@/components/ecommerce/DemographicCard";
 // import RecentOrders from "@/components/ecommerce/RecentOrders";

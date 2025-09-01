@@ -4,7 +4,7 @@ import { BoxIconLine, FrekIcon, RpIcon, UsdIcon } from "@/icons";
 import DashboardService, { SummaryEkspor } from "@/services/DashboardServices";
 
 export const ResumeEkspor = () => {
-  const [data, setData] = useState<SummaryEkspor | null>(null);
+  const [data, setData] = useState<SummaryEkspor[] | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -22,18 +22,18 @@ export const ResumeEkspor = () => {
     loadData();
   }, []);
 
-  // formatter untuk angka biasa
+  // formatter angka biasa
   const formatNumber = (value: number) =>
     new Intl.NumberFormat("id-ID").format(value);
 
-  // formatter angka dengan 2 digit di belakang koma (misal untuk totalVolume / 1000)
+  // formatter angka dengan 2 digit desimal
   const formatNumber2Dec = (value: number) =>
     new Intl.NumberFormat("id-ID", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
 
-  // formatter untuk mata uang
+  // formatter currency
   const formatCurrency = (value: number, currency: "IDR" | "USD") =>
     new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -41,6 +41,12 @@ export const ResumeEkspor = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
+
+  // hitung total dari array
+  const totalFreq = data?.reduce((acc, item) => acc + (item.JUMLAH ?? 0), 0) ?? 0;
+  const totalVolume = data?.reduce((acc, item) => acc + (item.NETTO ?? 0), 0) ?? 0;
+  const totalNilaiIDR = data?.reduce((acc, item) => acc + (item.NILAIIDR ?? 0), 0) ?? 0;
+  const totalNilaiUSD = data?.reduce((acc, item) => acc + (item.NILAIUSD ?? 0), 0) ?? 0;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-6">
@@ -56,7 +62,7 @@ export const ResumeEkspor = () => {
         </div>
         <div className="flex items-end justify-end mt-5">
           <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-            {formatNumber(data?.jumFreq ?? 0)}
+            {formatNumber(totalFreq)}
           </h4>
         </div>
       </div>
@@ -73,7 +79,7 @@ export const ResumeEkspor = () => {
         </div>
         <div className="flex items-end justify-end mt-5">
           <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-            {formatNumber2Dec((data?.totalVolume ?? 0) / 1000)}
+            {formatNumber2Dec(totalVolume / 1000)}
           </h4>
         </div>
       </div>
@@ -90,7 +96,7 @@ export const ResumeEkspor = () => {
         </div>
         <div className="flex items-end justify-end mt-5">
           <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-            {formatCurrency((data?.totalNilaiIDR ?? 0) / 1000000, "IDR")}
+            {formatCurrency(totalNilaiIDR / 1_000_000, "IDR")}
           </h4>
         </div>
       </div>
@@ -107,7 +113,7 @@ export const ResumeEkspor = () => {
         </div>
         <div className="flex items-end justify-end mt-5">
           <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-            {formatCurrency((data?.totalNilaiUSD ?? 0) / 1000000, "USD")}
+            {formatCurrency(totalNilaiUSD / 1_000_000, "USD")}
           </h4>
         </div>
       </div>
