@@ -3,11 +3,15 @@ import { apiFetch } from "@/utils/api";
 
 // ----- Define response interfaces -----
 export interface SummaryEkspor {
-  TANGGAL: number;
-  JUMLAH: number;
-  NETTO: number;
-  NILAIIDR: number;
-  NILAIUSD: number;
+  // TANGGAL: number;
+  // JUMLAH: number;
+  // NETTO: number;
+  // NILAIIDR: number;
+  // NILAIUSD: number;
+  jumFreq: number;
+  totalVolume: number;
+  totalNilaiIDR: number;
+  totalNilaiUSD: number;
 }
 
 export interface FrequensiEkspor {
@@ -26,8 +30,8 @@ export default class DashboardService {
     kdUpt: string,
     tglAwal: string,
     tglAkhir: string
-  ): Promise<SummaryEkspor[]> {
-    return apiFetch<SummaryEkspor[]>(
+  ): Promise<SummaryEkspor> {
+    return apiFetch<SummaryEkspor>(
       `/ekspor/summary/${kdUpt}/${tglAwal}/${tglAkhir}`
     );
   }

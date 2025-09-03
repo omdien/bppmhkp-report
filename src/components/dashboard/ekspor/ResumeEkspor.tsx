@@ -4,7 +4,8 @@ import { BoxIconLine, FrekIcon, RpIcon, UsdIcon } from "@/icons";
 import DashboardService, { SummaryEkspor } from "@/services/DashboardServices";
 
 export const ResumeEkspor = () => {
-  const [data, setData] = useState<SummaryEkspor[] | null>(null);
+  // const [data, setData] = useState<SummaryEkspor[] | null>(null);
+  const [data, setData] = useState<SummaryEkspor | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -43,10 +44,14 @@ export const ResumeEkspor = () => {
     }).format(value);
 
   // hitung total dari array
-  const totalFreq = data?.reduce((acc, item) => acc + (item.JUMLAH ?? 0), 0) ?? 0;
-  const totalVolume = data?.reduce((acc, item) => acc + (item.NETTO ?? 0), 0) ?? 0;
-  const totalNilaiIDR = data?.reduce((acc, item) => acc + (item.NILAIIDR ?? 0), 0) ?? 0;
-  const totalNilaiUSD = data?.reduce((acc, item) => acc + (item.NILAIUSD ?? 0), 0) ?? 0;
+  // const totalFreq = data?.reduce((acc, item) => acc + (item.JUMLAH ?? 0), 0) ?? 0;
+  // const totalVolume = data?.reduce((acc, item) => acc + (item.NETTO ?? 0), 0) ?? 0;
+  // const totalNilaiIDR = data?.reduce((acc, item) => acc + (item.NILAIIDR ?? 0), 0) ?? 0;
+  // const totalNilaiUSD = data?.reduce((acc, item) => acc + (item.NILAIUSD ?? 0), 0) ?? 0;
+  const totalFreq = data?.jumFreq ?? 0;
+  const totalVolume = data?.totalVolume ?? 0;
+  const totalNilaiIDR = data?.totalNilaiIDR ?? 0;
+  const totalNilaiUSD = data?.totalNilaiUSD ?? 0;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-6">
