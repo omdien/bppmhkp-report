@@ -29,7 +29,7 @@ export default function RootLayout({
         <ThemeProvider>
           <SidebarProvider>
             <UserProvider>
-              {showNavbar && <ResponsiveNav />}
+                {showNavbar && <ResponsiveNav />}
               {children}
             </UserProvider>
           </SidebarProvider>
