@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { BoxIconLine, FrekIcon, RpIcon, UsdIcon } from "@/icons";
 import DashboardService, { SummaryEkspor } from "@/services/DashboardServices";
 import { usePeriode } from "@/context/PeriodeContext";
+import { useUser } from "@/context/UserContext";
 
 /* ------------------ Helpers ------------------ */
 const formatNumber = (value: number) =>
@@ -40,7 +41,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, value }) => (
       </span>
     </div>
     <div className="flex items-end justify-end mt-5">
-      <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
+      <h4 className="font-bold text-gray-800 text-[25px] dark:text-white/90">
         {value}
       </h4>
     </div>
@@ -51,13 +52,16 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, value }) => (
 export const ResumeEkspor = () => {
   const [data, setData] = useState<SummaryEkspor | null>(null);
   const { periode } = usePeriode(); // ambil periode dari context
+  const { user } = useUser();
 
   useEffect(() => {
+    if (!user) return; // ⬅️ kalau user null, hentikan eksekusi
     const loadData = async () => {
       try {
         if (!periode.startDate || !periode.endDate) return;
         const result = await DashboardService.getSummaryEkspor(
-          "00.1", // kode bisa juga dibuat dinamis kalau perlu
+          // "00.1", // kode bisa juga dibuat dinamis kalau perlu
+          user.kd_unit,
           periode.startDate,
           periode.endDate
         );
@@ -67,7 +71,7 @@ export const ResumeEkspor = () => {
       }
     };
     loadData();
-  }, [periode]); // akan refetch setiap kali periode berubah
+  }, [periode,user]); // akan refetch setiap kali periode berubah
 
   const stats = [
     {

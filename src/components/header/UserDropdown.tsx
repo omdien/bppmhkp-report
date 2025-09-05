@@ -10,8 +10,9 @@ import { useUser } from "@/context/UserContext";
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { user, initializing } = useUser();
-  const { clearUser } = useUser();
+  // const { user, initializing } = useUser();
+  const { user, initializing, clearUser } = useUser();
+  // const { clearUser } = useUser();
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();
@@ -89,6 +90,9 @@ export default function UserDropdown() {
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
             {user?.email ?? (initializing ? "Loading..." : "Anonymous")}
+          </span>
+          <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
+            {user?.nama_unit ?? (initializing ? "Loading..." : "Anonymous")}
           </span>
         </div>
 
