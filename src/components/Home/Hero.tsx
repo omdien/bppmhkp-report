@@ -34,7 +34,7 @@ const Hero = () => {
                 {/* image content for mobile */}
                 <div className='xl:hidden w-full flex justify-center mt-30 mb-2'>
                     <div className='bg-white rounded-3xl shadow-lg py-4 px-10 w-6/8 max-w-xs'>
-                        <Image src='/images/bppmhkp-logo.png' alt='image' width={300} height={300} className='mx-auto' />
+                        <Image src={imaga_bppmhkp} alt='image' width={300} height={300} className='mx-auto' />
                     </div>
                 </div>
 
