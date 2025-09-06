@@ -3,25 +3,26 @@ import { apiFetch } from "@/utils/api";
 
 // ----- Define response interfaces -----
 export interface SummaryEkspor {
-  // TANGGAL: number;
-  // JUMLAH: number;
-  // NETTO: number;
-  // NILAIIDR: number;
-  // NILAIUSD: number;
   jumFreq: number;
   totalVolume: number;
   totalNilaiIDR: number;
   totalNilaiUSD: number;
 }
 
-export interface FrequensiEkspor {
+export interface EksporHarian {
   TANGGAL: number;
-  FREQUENSI: number;
+  JUMLAH: number;
+  NETTO: number;
+  NILAIIDR: number;
+  NILAIUSD: number;
 }
 
-export interface VolumeEkspor {
-  TANGGAL: number;
-  VOLUME: number;
+export interface EksporBulanan {
+  BULAN: number;      // 1 - 12
+  JUMLAH: number;     // jumlah transaksi
+  NETTO: number;      // volume ekspor
+  NILAIIDR: number;   // nilai dalam Rupiah
+  NILAIUSD: number;   // nilai dalam USD
 }
 
 // ----- Service Class -----
@@ -36,23 +37,23 @@ export default class DashboardService {
     );
   }
 
-//   static async getFrequensiEkspor(
-//     kdUpt: string,
-//     tglAwal: string,
-//     tglAkhir: string
-//   ): Promise<FrequensiEkspor[]> {
-//     return apiFetch<FrequensiEkspor[]>(
-//       `/ekspor/frequensi/${kdUpt}/${tglAwal}/${tglAkhir}`
-//     );
-//   }
+  static async getEksporHarian(
+    kdUpt: string,
+    tglAwal: string,
+    tglAkhir: string
+  ): Promise<EksporHarian[]> {
+    return apiFetch<EksporHarian[]>(
+      `/ekspor/harian/${kdUpt}/${tglAwal}/${tglAkhir}`
+    );
+  }
 
-//   static async getVolumeEkspor(
-//     kdUpt: string,
-//     tglAwal: string,
-//     tglAkhir: string
-//   ): Promise<VolumeEkspor[]> {
-//     return apiFetch<VolumeEkspor[]>(
-//       `/ekspor/volume/${kdUpt}/${tglAwal}/${tglAkhir}`
-//     );
-//   }
+  static async getEksporBulanan(
+    kdUpt: string,
+    tglAwal: string,
+    tglAkhir: string
+  ): Promise<EksporBulanan[]> {
+    return apiFetch<EksporBulanan[]>(
+      `/ekspor/bulanan/${kdUpt}/${tglAwal}/${tglAkhir}`
+    );
+  }
 }

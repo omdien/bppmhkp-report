@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ResumeEkspor } from "@/components/dashboard/ekspor/ResumeEkspor";
-// import MonthlyTarget from "@/components/ecommerce/MonthlyTarget";
-// import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
-// import StatisticsChart from "@/components/ecommerce/StatisticsChart";
-// import DemographicCard from "@/components/ecommerce/DemographicCard";
-// import RecentOrders from "@/components/ecommerce/RecentOrders";
+import { DashboardEkspor } from "@/components/dashboard/ekspor/DashboardEkspor";
 
 export default function ReportingDashboard() {
   const [activeTab, setActiveTab] = useState("smkhp");
@@ -38,7 +33,7 @@ export default function ReportingDashboard() {
       {activeTab === "smkhp" && (
         <div className="grid grid-cols-12 gap-4 md:gap-6">
           <div className="col-span-12 space-y-6 xl:col-span-12">
-            <ResumeEkspor />
+            <DashboardEkspor />
             {/* <MonthlySalesChart /> */}
           </div>
           {/* <div className="col-span-12 xl:col-span-5">

@@ -1,9 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BoxIconLine, FrekIcon, RpIcon, UsdIcon } from "@/icons";
-import DashboardService, { SummaryEkspor } from "@/services/DashboardServices";
-import { usePeriode } from "@/context/PeriodeContext";
-import { useUser } from "@/context/UserContext";
 
 /* ------------------ Helpers ------------------ */
 const formatNumber = (value: number) =>
@@ -48,31 +45,17 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, value }) => (
   </div>
 );
 
-/* ------------------ Main Component ------------------ */
-export const ResumeEkspor = () => {
-  const [data, setData] = useState<SummaryEkspor | null>(null);
-  const { periode } = usePeriode(); // ambil periode dari context
-  const { user } = useUser();
+/* ------------------ ResumeCard wrapper ------------------ */
+type ResumeCardProps = {
+  data: {
+    jumFreq?: number;
+    totalVolume?: number;
+    totalNilaiIDR?: number;
+    totalNilaiUSD?: number;
+  } | null;
+};
 
-  useEffect(() => {
-    if (!user) return; // ⬅️ kalau user null, hentikan eksekusi
-    const loadData = async () => {
-      try {
-        if (!periode.startDate || !periode.endDate) return;
-        const result = await DashboardService.getSummaryEkspor(
-          // "00.1", // kode bisa juga dibuat dinamis kalau perlu
-          user.kd_unit,
-          periode.startDate,
-          periode.endDate
-        );
-        setData(result);
-      } catch (err) {
-        console.error("Gagal fetch summary ekspor:", err);
-      }
-    };
-    loadData();
-  }, [periode,user]); // akan refetch setiap kali periode berubah
-
+const ResumeCard: React.FC<ResumeCardProps> = ({ data }) => {
   const stats = [
     {
       icon: <FrekIcon className="text-gray-800 size-6 dark:text-white/90" />,
@@ -104,3 +87,5 @@ export const ResumeEkspor = () => {
     </div>
   );
 };
+
+export default ResumeCard;
