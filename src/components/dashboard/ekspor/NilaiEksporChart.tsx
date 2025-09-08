@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
-import { Periode, EksporBulanan, EksporHarian } from "@/types/dashboard";
+import { EksporBulanan, EksporHarian } from "@/services/DashboardServices";
 
 // Dynamic import untuk ReactApexChart
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -12,40 +12,99 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 interface NilaiEksporChartProps {
   dataBulanan: EksporBulanan[];
   dataHarian: EksporHarian[];
-  periode: Periode; // "bulanan" | "harian"
+  startDate: string;
+  endDate: string;
 }
 
 export default function NilaiEksporChart({
   dataBulanan,
   dataHarian,
-  periode,
+  startDate,
+  endDate,
 }: NilaiEksporChartProps) {
-  // Pilih data sesuai periode
-  const data = periode === "bulanan" ? dataBulanan : dataHarian;
+  // Cek apakah periode dalam 1 bulan
+  const isSameMonth = useMemo(() => {
+    if (!startDate || !endDate) return false;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
+  }, [startDate, endDate]);
 
   // X-axis (bulan / tanggal)
-  const categories =
-    periode === "bulanan"
-      ? data.map((d) => (d.bulan ?? d.BULAN)) // fallback ke BULAN kalau dari DB uppercase
-      : data.map((d) => (d.tanggal ?? d.TANGGAL));
+  // const categorieso =
+  //   periode === "bulanan"
+  //     ? data.map((d) => (d.BULAN ?? d.BULAN)) // fallback ke BULAN kalau dari DB uppercase
+  //     : data.map((d) => (d.TANGGAL ?? d.TANGGAL));
 
   // Series IDR dan USD (dibagi 1.000.000 biar jutaan)
-  const series = [
-    {
-      name: "Nilai Ekspor (IDR)",
-      type: "line",
-      data: data.map((d) =>
-        (d.nilai_idr ?? d.NILAIIDR) / 1_000_000
-      ),
-    },
-    {
-      name: "Nilai Ekspor (USD)",
-      type: "line",
-      data: data.map((d) =>
-        (d.nilai_usd ?? d.NILAIUSD) / 1_000_000
-      ),
-    },
-  ];
+  // const serieso = [
+  //   {
+  //     name: "Nilai Ekspor (IDR)",
+  //     type: "line",
+  //     data: data.map((d) =>
+  //       (d.NILAIIDR ?? d.NILAIIDR) / 1_000_000
+  //     ),
+  //   },
+  //   {
+  //     name: "Nilai Ekspor (USD)",
+  //     type: "line",
+  //     data: data.map((d) =>
+  //       (d.NILAIUSD ?? d.NILAIUSD) / 1_000_000
+  //     ),
+  //   },
+  // ];
+
+
+  const { categories, series } = useMemo(() => {
+    if (isSameMonth) {
+      // Data harian
+      return {
+        categories: dataHarian.map((d) => (d.TANGGAL ?? d.TANGGAL ?? "").toString()),
+        // series: dataHarian.map((d) => d.JUMLAH ?? 0),
+        series: [
+          {
+            name: "Nilai Ekspor (IDR)",
+            type: "line",
+            data: dataHarian.map((d) =>
+              (d.NILAIIDR ?? d.NILAIIDR) / 1_000_000
+            ),
+          },
+          {
+            name: "Nilai Ekspor (USD)",
+            type: "line",
+            data: dataHarian.map((d) =>
+              (d.NILAIUSD ?? d.NILAIUSD) / 1_000_000
+            ),
+          },
+        ],
+      };
+    } else {
+      // Data bulanan
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+      return {
+        categories: dataBulanan.map((d) =>
+          d.BULAN && d.BULAN >= 1 && d.BULAN <= 12 ? monthNames[d.BULAN - 1] : ""
+        ),
+        // series: dataBulanan.map((d) => d.JUMLAH ?? 0),
+        series: [
+          {
+            name: "Nilai Ekspor (IDR)",
+            type: "line",
+            data: dataBulanan.map((d) =>
+              (d.NILAIIDR ?? d.NILAIIDR) / 1_000_000
+            ),
+          },
+          {
+            name: "Nilai Ekspor (USD)",
+            type: "line",
+            data: dataBulanan.map((d) =>
+              (d.NILAIUSD ?? d.NILAIUSD) / 1_000_000
+            ),
+          },
+        ],
+      };
+    }
+  }, [isSameMonth, dataHarian, dataBulanan]);
 
   // Chart options
   const options: ApexOptions = {
@@ -72,7 +131,7 @@ export default function NilaiEksporChart({
       shared: true,
       intersect: false,
       x: {
-        format: periode === "harian" ? "dd MMM yyyy" : "MMM yyyy",
+        format: isSameMonth ? "dd MMM yyyy" : "MMM yyyy",
       },
       y: {
         formatter: (val, opts) =>
@@ -89,7 +148,7 @@ export default function NilaiEksporChart({
       categories,
       type: "category",
       labels: {
-        rotate: periode === "harian" ? -45 : 0,
+        rotate: isSameMonth ? -45 : 0,
         style: { colors: "#6B7280", fontSize: "12px" },
       },
       axisBorder: { show: false },
@@ -131,7 +190,7 @@ export default function NilaiEksporChart({
           Nilai Ekspor
         </h3>
         <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-          Periode {periode === "harian" ? "Harian" : "Bulanan"}
+          Periode {isSameMonth ? "Harian" : "Bulanan"}
         </p>
       </div>
 

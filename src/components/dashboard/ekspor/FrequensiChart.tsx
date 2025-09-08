@@ -7,10 +7,8 @@ import { useState, useMemo } from "react";
 import { Dropdown } from "../../ui/dropdown/Dropdown";
 import { EksporBulanan, EksporHarian } from "@/services/DashboardServices";
 
-// ApexChart
-const ReactApexChart = dynamic(() => import("react-apexcharts"), {
-  ssr: false,
-});
+// Dynamic import ApexChart
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface FrequensiChartProps {
   dataHarian: EksporHarian[];
@@ -27,7 +25,7 @@ export default function FrequensiChart({
 }: FrequensiChartProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // helper untuk cek apakah dalam 1 bulan
+  // Cek apakah periode dalam 1 bulan
   const isSameMonth = useMemo(() => {
     if (!startDate || !endDate) return false;
     const start = new Date(startDate);
@@ -35,20 +33,22 @@ export default function FrequensiChart({
     return start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
   }, [startDate, endDate]);
 
-  // siapkan data chart
+  // Siapkan data chart
   const { categories, seriesData } = useMemo(() => {
     if (isSameMonth) {
-      // data harian
+      // Data harian
       return {
-        categories: dataHarian.map((d) => d.TANGGAL.toString()), // ex: "1", "2", "3"
-        seriesData: dataHarian.map((d) => d.JUMLAH),
+        categories: dataHarian.map((d) => (d.TANGGAL ?? d.TANGGAL ?? "").toString()),
+        seriesData: dataHarian.map((d) => d.JUMLAH ?? 0),
       };
     } else {
-      // data bulanan
+      // Data bulanan
       const monthNames = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
       return {
-        categories: dataBulanan.map((d) => monthNames[d.BULAN - 1]),
-        seriesData: dataBulanan.map((d) => d.JUMLAH),
+        categories: dataBulanan.map((d) =>
+          d.BULAN && d.BULAN >= 1 && d.BULAN <= 12 ? monthNames[d.BULAN - 1] : ""
+        ),
+        seriesData: dataBulanan.map((d) => d.JUMLAH ?? 0),
       };
     }
   }, [isSameMonth, dataHarian, dataBulanan]);
@@ -70,25 +70,10 @@ export default function FrequensiChart({
       },
     },
     dataLabels: { enabled: false },
-    stroke: {
-      show: true,
-      width: 4,
-      colors: ["transparent"],
-    },
-    xaxis: {
-      categories,
-      axisBorder: { show: false },
-      axisTicks: { show: false },
-    },
-    legend: {
-      show: true,
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Outfit",
-    },
-    yaxis: {
-      title: { text: "Jumlah" },
-    },
+    stroke: { show: true, width: 4, colors: ["transparent"] },
+    xaxis: { categories, axisBorder: { show: false }, axisTicks: { show: false } },
+    legend: { show: true, position: "top", horizontalAlign: "left", fontFamily: "Outfit" },
+    yaxis: { title: { text: "Jumlah" } },
     grid: { yaxis: { lines: { show: true } } },
     fill: { opacity: 1 },
     tooltip: {
@@ -97,19 +82,7 @@ export default function FrequensiChart({
     },
   };
 
-  const series = [
-    {
-      name: "Jumlah",
-      data: seriesData,
-    },
-  ];
-
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  const series = [{ name: "Jumlah", data: seriesData }];
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
@@ -118,12 +91,12 @@ export default function FrequensiChart({
           Frekuensi Ekspor
         </h3>
         <div className="relative inline-block">
-          <button onClick={toggleDropdown} className="dropdown-toggle">
+          <button onClick={() => setIsOpen(!isOpen)} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
+          <Dropdown isOpen={isOpen} onClose={() => setIsOpen(false)} className="w-40 p-2">
             <DropdownItem
-              onItemClick={closeDropdown}
+              onItemClick={() => setIsOpen(false)}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               View More

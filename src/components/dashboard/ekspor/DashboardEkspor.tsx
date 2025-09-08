@@ -12,24 +12,6 @@ import VolumeChart from "./VolumeChart";
 import NilaiEksporChart from "./NilaiEksporChart";
 import ResumeCard from "./ResumeCard";
 
-/* ------------------ Helper ------------------ */
-const getPeriodeType = (
-  startDate: string,
-  endDate: string
-): "bulanan" | "harian" => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  const diffDays = diffTime / (1000 * 60 * 60 * 24);
-
-  // Jika beda bulan atau > 30 hari → bulanan
-  if (start.getMonth() !== end.getMonth() || diffDays > 30) {
-    return "bulanan";
-  }
-  return "harian";
-};
-
 /* ------------------ Main Component ------------------ */
 export const DashboardEkspor = () => {
   const [data, setData] = useState<SummaryEkspor | null>(null);
@@ -151,11 +133,8 @@ export const DashboardEkspor = () => {
         <NilaiEksporChart
           dataBulanan={dataBulanan}
           dataHarian={dataHarian}
-          periode={
-            periode.startDate && periode.endDate
-              ? getPeriodeType(periode.startDate, periode.endDate)
-              : "bulanan" // default awal
-          }
+          startDate={periode.startDate}
+          endDate={periode.endDate}
         />
       </div>
     </div>

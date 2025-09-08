@@ -1,6 +1,7 @@
 // src/context/UserContext.tsx
 "use client";
 
+// import { clear } from "console";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface User {
