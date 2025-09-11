@@ -1,5 +1,5 @@
 // src/services/DashboardService.tsx
-import { apiFetch } from "@/utils/api";
+import { dashboardFetch } from "@/utils/api";
 
 // ----- Define response interfaces -----
 export interface SummaryEkspor {
@@ -32,7 +32,7 @@ export default class DashboardService {
     tglAwal: string,
     tglAkhir: string
   ): Promise<SummaryEkspor> {
-    return apiFetch<SummaryEkspor>(
+    return dashboardFetch<SummaryEkspor>(
       `/ekspor/summary/${kdUpt}/${tglAwal}/${tglAkhir}`
     );
   }
@@ -42,7 +42,7 @@ export default class DashboardService {
     tglAwal: string,
     tglAkhir: string
   ): Promise<EksporHarian[]> {
-    return apiFetch<EksporHarian[]>(
+    return dashboardFetch<EksporHarian[]>(
       `/ekspor/harian/${kdUpt}/${tglAwal}/${tglAkhir}`
     );
   }
@@ -52,7 +52,7 @@ export default class DashboardService {
     tglAwal: string,
     tglAkhir: string
   ): Promise<EksporBulanan[]> {
-    return apiFetch<EksporBulanan[]>(
+    return dashboardFetch<EksporBulanan[]>(
       `/ekspor/bulanan/${kdUpt}/${tglAwal}/${tglAkhir}`
     );
   }

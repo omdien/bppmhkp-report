@@ -1,8 +1,12 @@
-// src/context/UserContext.tsx
 "use client";
 
-// import { clear } from "console";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 interface User {
   id: number;
@@ -28,22 +32,35 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
 
-  const setUser = (u: User | null) => {
+  // ✅ simpan user ke sessionStorage
+  const setUser = useCallback((u: User | null) => {
     setUserState(u);
     try {
-      if (u) sessionStorage.setItem("user", JSON.stringify(u));
-      else sessionStorage.removeItem("user");
-    } catch {}
-  };
+      if (u) {
+        sessionStorage.setItem("user", JSON.stringify(u));
+      } else {
+        sessionStorage.removeItem("user");
+      }
+    } catch {
+      // abaikan error storage
+    }
+  }, []);
 
-  const clearUser = () => setUser(null);
+  // ✅ stabil pakai useCallback biar gak warning
+  const clearUser = useCallback(() => {
+    setUser(null);
+  }, [setUser]);
 
   useEffect(() => {
-    // Restore cepat dari sessionStorage
+    // restore user dari sessionStorage
     try {
       const stored = sessionStorage.getItem("user");
-      if (stored) setUserState(JSON.parse(stored));
-    } catch {}
+      if (stored) {
+        setUserState(JSON.parse(stored));
+      }
+    } catch {
+      // abaikan error parse
+    }
 
     const validate = async () => {
       try {
@@ -51,6 +68,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
           { credentials: "include", cache: "no-store" }
         );
+
         if (res.ok) {
           const raw = await res.json();
           const normalized: User = {
@@ -74,7 +92,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
 
     validate();
-  }, []);
+  }, [clearUser, setUser]);
 
   return (
     <UserContext.Provider

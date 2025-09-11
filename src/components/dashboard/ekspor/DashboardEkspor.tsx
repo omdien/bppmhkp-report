@@ -76,7 +76,6 @@ export const DashboardEkspor = () => {
         startDate,
         endDate
       );
-      console.log("Hasil Ekspor Bulanan:", result);
       setData(result);
     } catch (err) {
       console.error("Gagal fetch ekspor bulanan:", err);
@@ -96,7 +95,6 @@ export const DashboardEkspor = () => {
         startDate,
         endDate
       );
-      console.log("Hasil Ekspor Harian:", result);
       setData(result);
     } catch (err) {
       console.error("Gagal fetch ekspor harian:", err);
