@@ -115,19 +115,19 @@ export default function ReportPage() {
         {/* --- Summary Badges --- */}
         <div className="flex">
           <div>
-            <Badge variant="light" color="primary" size="md">Frekuensi</Badge>
+          <Badge variant="light" color="primary" size="md">Frekuensi</Badge>
             <Badge variant="solid" color="primary" size="md">
               {formatNumber(dataSummary?.jumFreq ?? 0)}
             </Badge>{" "}
-            <Badge variant="light" color="success" size="md">Volume (Ton)</Badge>
+         <Badge variant="light" color="success" size="md">Volume (Ton)</Badge>
             <Badge variant="solid" color="success" size="md">
               {formatNumber2Dec((dataSummary?.totalVolume ?? 0) / 1000)}
             </Badge>{" "}
-            <Badge variant="light" color="error" size="md">Nilai IDR (Juta)</Badge>
+          <Badge variant="light" color="error" size="md">Nilai IDR (Juta)</Badge>
             <Badge variant="solid" color="error">
               {formatCurrency((dataSummary?.totalNilaiIDR ?? 0) / 1_000_000, "IDR")}
             </Badge>{" "}
-            <Badge variant="light" color="info" size="md">Nilai USD (Juta)</Badge>
+         <Badge variant="light" color="info" size="md">Nilai USD (Juta)</Badge>
             <Badge variant="solid" color="info" size="md">
               {formatCurrency((dataSummary?.totalNilaiUSD ?? 0) / 1_000_000, "USD")}
             </Badge>
