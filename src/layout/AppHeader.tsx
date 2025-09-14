@@ -12,7 +12,7 @@ import logo from "/public/images/logo.png";
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
-  const { setPeriode } = usePeriode();
+  const { periode, setPeriode } = usePeriode(); // ambil context periode
 
   const handleToggle = () => {
     if (window.innerWidth >= 1024) {
@@ -22,8 +22,9 @@ const AppHeader: React.FC = () => {
     }
   };
 
-  const handlePeriodeSubmit = (periode: { startDate: string; endDate: string }) => {
-    setPeriode(periode); // update context → semua dashboard otomatis refresh
+  // handler untuk PeriodePicker
+  const handlePeriodeSubmit = (newPeriode: { startDate: string; endDate: string }) => {
+    setPeriode(newPeriode); // update context → semua komponen otomatis update
   };
 
   return (
@@ -38,13 +39,7 @@ const AppHeader: React.FC = () => {
             className="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 lg:h-11 lg:w-11 lg:border lg:border-gray-200 dark:lg:border-gray-800"
           >
             {isMobileOpen ? (
-              // Close Icon
-              <svg
-                width="24"
-                height="24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -53,13 +48,7 @@ const AppHeader: React.FC = () => {
                 />
               </svg>
             ) : (
-              // Hamburger Icon
-              <svg
-                width="16"
-                height="12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg width="16" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -73,13 +62,7 @@ const AppHeader: React.FC = () => {
           {/* Logo (mobile) */}
           <Link href="/dashboard" className="lg:hidden">
             <div className="flex items-center space-x-2">
-              <Image
-                src={logo}
-                alt="Logo BPPMHKP"
-                width={40}
-                height={40}
-                priority
-              />
+              <Image src={logo} alt="Logo BPPMHKP" width={40} height={40} priority />
               <div className="text-2xl font-bold sm:text-3xl">
                 <span className="text-blue-600">BPP</span>
                 <span className="text-orange-500">MHKP</span>
@@ -92,12 +75,7 @@ const AppHeader: React.FC = () => {
             onClick={() => setApplicationMenuOpen((prev) => !prev)}
             className="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
           >
-            <svg
-              width="24"
-              height="24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -110,17 +88,16 @@ const AppHeader: React.FC = () => {
           {/* Periode Picker (desktop) */}
           <div className="hidden lg:block">
             <PeriodePicker
-              startDate="2025-01-01"
-              endDate="2025-12-31"
-              onSubmit={handlePeriodeSubmit}
+              startDate={periode.startDate}  // ambil dari context
+              endDate={periode.endDate}      // ambil dari context
+              onSubmit={handlePeriodeSubmit} // update context saat klik "Terapkan"
             />
           </div>
         </div>
 
         {/* RIGHT SECTION */}
         <div
-          className={`${isApplicationMenuOpen ? "flex" : "hidden"
-            } w-full items-center justify-between gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none`}
+          className={`${isApplicationMenuOpen ? "flex" : "hidden"} w-full items-center justify-between gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none`}
         >
           <div className="flex items-center gap-2 2xsm:gap-3">
             <ThemeToggleButton />

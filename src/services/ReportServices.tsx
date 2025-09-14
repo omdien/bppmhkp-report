@@ -39,6 +39,8 @@ export interface ReportEkspor {
 export type PaginatedResponse<T> = {
   data: T[];
   total: number;
+  totalPages: number;
+  totalRecords: number;
 };
 
 // ----- Service Class -----
@@ -61,11 +63,15 @@ export default class ReportService {
   /**
    * Export laporan ekspor ke Excel
    */
-  static async exportEksporReportToExcel(kdUpt: string): Promise<Blob> {
+  static async exportEksporReportToExcel(
+    kdUpt: string,
+    tglAwal: string,
+    tglAkhir: string
+  ): Promise<Blob> {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/ekspor/tr-report-ekspor-excell/${kdUpt}`,
+      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/ekspor/tr-report-ekspor-excell/${kdUpt}?tglAwal=${tglAwal}&tglAkhir=${tglAkhir}`,
       {
-        credentials: "include", // ⬅️ biar cookie (token) tetap dikirim
+        credentials: "include",
       }
     );
 

@@ -45,7 +45,13 @@ export default function LoginPage() {
       await loginUser(form.username, form.password);
       const userData = await getCurrentUser();
 
-      // ✅ langsung setUser → dashboard aman
+      // ❌ Cek role 4 dan 5 → tolak
+      if ([4, 5].includes(Number(userData.ROLE))) {
+        setError("Anda tidak memiliki hak akses ke aplikasi ini.");
+        return; // stop di sini, jangan setUser
+      }
+
+      // ✅ hanya setUser kalau role valid
       setUser({
         id: userData.USER_ID,
         username: userData.USERNAME,
@@ -56,7 +62,7 @@ export default function LoginPage() {
         nama_unit: userData.upt?.NM_UNIT ?? null,
       });
 
-      router.replace("/dashboard"); // gunakan replace supaya history bersih
+      router.replace("/dashboard");
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError("Terjadi kesalahan koneksi");
@@ -92,9 +98,8 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 rounded text-white transition ${
-            loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-          }`}
+          className={`w-full py-2 rounded text-white transition ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+            }`}
         >
           {loading ? "Memproses..." : "Login"}
         </button>

@@ -71,6 +71,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         if (res.ok) {
           const raw = await res.json();
+
+          if ([4, 5].includes(Number(raw.ROLE))) {
+            clearUser(); // langsung logout
+            return;
+          }
+
           const normalized: User = {
             id: raw.USER_ID,
             username: raw.USERNAME,

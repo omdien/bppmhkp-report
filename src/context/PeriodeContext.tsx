@@ -8,17 +8,19 @@ export type Periode = {
 
 type PeriodeContextType = {
   periode: Periode;
-  setPeriode: (p: Periode) => void;
+  setPeriode: React.Dispatch<React.SetStateAction<Periode>>;
 };
 
-// default periode (supaya periode tidak pernah undefined)
+// default periode
 const defaultPeriode: Periode = {
   startDate: "2025-01-01",
   endDate: "2025-12-31",
 };
 
-const PeriodeContext = createContext<PeriodeContextType | undefined>(undefined);
+// buat context
+const PeriodeContext = createContext<PeriodeContextType | null>(null);
 
+// provider
 export const PeriodeProvider = ({ children }: { children: ReactNode }) => {
   const [periode, setPeriode] = useState<Periode>(defaultPeriode);
 
@@ -29,10 +31,9 @@ export const PeriodeProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// custom hook
 export const usePeriode = () => {
   const context = useContext(PeriodeContext);
-  if (!context) {
-    throw new Error("usePeriode must be used within a PeriodeProvider");
-  }
+  if (!context) throw new Error("usePeriode must be used within a PeriodeProvider");
   return context;
 };

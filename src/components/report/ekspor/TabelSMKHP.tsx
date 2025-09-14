@@ -1,10 +1,17 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ReportEkspor } from "@/services/ReportServices";
 
 type Column<T> = {
   key: keyof T;
   label: string;
+  align?: "left" | "right" | "center";
   formatter?: (value: unknown, row: T) => React.ReactNode;
 };
 
@@ -13,12 +20,14 @@ const columns: Column<ReportEkspor>[] = [
   {
     key: "tanggal_aju",
     label: "TGL AJU",
-    formatter: (v) => v ? new Date(v as string).toLocaleDateString("id-ID") : "-",
+    formatter: (v) =>
+      v ? new Date(v as string).toLocaleDateString("id-ID") : "-",
   },
   {
     key: "tanggal_berangkat",
     label: "TGL BRKT",
-    formatter: (v) => (v ? new Date(v as string).toLocaleDateString("id-ID") : "-"),
+    formatter: (v) =>
+      v ? new Date(v as string).toLocaleDateString("id-ID") : "-",
   },
   { key: "no_hc", label: "NO SMKHP" },
   {
@@ -50,35 +59,26 @@ const columns: Column<ReportEkspor>[] = [
   {
     key: "netto",
     label: "VOLUME (kg)",
-    formatter: (v) => {
-      if (typeof v === "number") {
-        return v.toLocaleString("id-ID");
-      }
-      return "-";
-    },
+    align: "right",
+    formatter: (v) =>
+      typeof v === "number" ? v.toLocaleString("id-ID") : "-",
   },
-  { key: "jumlah", label: "JUMLAH" },
+  { key: "jumlah", label: "JUMLAH", align: "right" },
   { key: "satuan", label: "SATUAN" },
   {
     key: "nilai_rupiah",
     label: "NILAI RUPIAH",
-    formatter: (v) => {
-      if (typeof v === "number") {
-        return v.toLocaleString("id-ID");
-      }
-      return "-";
-    },
+    align: "right",
+    formatter: (v) =>
+      typeof v === "number" ? v.toLocaleString("id-ID") : "-",
   },
-  { key: "kurs_usd", label: "KURS USD" },
+  { key: "kurs_usd", label: "KURS USD", align: "right" },
   {
     key: "nilai_usd",
     label: "NILAI USD",
-    formatter: (v) => {
-      if (typeof v === "number") {
-        return v.toLocaleString("id-ID");
-      }
-      return "-";
-    },
+    align: "right",
+    formatter: (v) =>
+      typeof v === "number" ? v.toLocaleString("id-ID") : "-",
   },
   { key: "cara_angkut", label: "CARA ANGKUT" },
   { key: "alat_angkut", label: "ALAT ANGKUT" },
@@ -87,43 +87,67 @@ const columns: Column<ReportEkspor>[] = [
 
 interface Props {
   data: ReportEkspor[];
+  page: number;
+  limit: number;
 }
 
-export default function TabelSMKHP({ data }: Props) {
+export default function TabelSMKHP({ data, page, limit }: Props) {
   const headerClass =
-    "px-5 py-3 text-gray-600 dark:text-gray-300 font-medium whitespace-nowrap";
-  const cellClass = "px-5 py-3 whitespace-nowrap text-gray-800 dark:text-gray-200";
+    "px-5 py-3 font-semibold whitespace-nowrap text-white text-sm";
+  const cellClass =
+    "px-5 py-3 whitespace-nowrap text-gray-800 dark:text-gray-200 text-sm";
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/5">
       <div className="max-w-full overflow-x-auto">
         <Table className="min-w-max table-auto border-collapse">
-          {/* Table Header */}
-          <TableHeader className="border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-gray-800/10">
-            <TableRow>
+          {/* Header */}
+          <TableHeader>
+            <TableRow className="bg-blue-500 dark:bg-blue-700">
               <TableCell isHeader className={headerClass}>
                 #
               </TableCell>
               {columns.map((col) => (
-                <TableCell key={col.key as string} isHeader className={headerClass}>
+                <TableCell
+                  key={col.key as string}
+                  isHeader
+                  className={`${headerClass} ${
+                    col.align === "right" ? "text-right" : "text-left"
+                  }`}
+                >
                   {col.label}
                 </TableCell>
               ))}
             </TableRow>
           </TableHeader>
 
-          {/* Table Body */}
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
+          {/* Body */}
+          <TableBody>
             {data.length > 0 ? (
               data.map((row, idx) => (
-                <TableRow key={idx}>
-                  <TableCell className={cellClass}>{idx + 1}</TableCell>
+                <TableRow
+                  key={idx}
+                  className={`${
+                    idx % 2 === 0
+                      ? "bg-white dark:bg-gray-900"
+                      : "bg-gray-50 dark:bg-gray-800"
+                  } hover:bg-blue-50 dark:hover:bg-gray-700`}
+                >
+                  <TableCell className={cellClass}>
+                    {(page - 1) * limit + idx + 1}
+                  </TableCell>
                   {columns.map((col) => {
+                    const rawValue = row[col.key];
                     const value = col.formatter
-                      ? col.formatter(row[col.key], row)
-                      : row[col.key];
+                      ? col.formatter(rawValue, row)
+                      : rawValue;
                     return (
-                      <TableCell key={col.key as string} className={cellClass}>
+                      <TableCell
+                        key={col.key as string}
+                        className={`${cellClass} ${
+                          col.align === "right" ? "text-right" : "text-left"
+                        }`}
+                      >
                         {value}
                       </TableCell>
                     );
