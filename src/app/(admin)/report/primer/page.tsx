@@ -6,10 +6,12 @@ import TabelProvinsiPrimer from "@/components/report/ekspor/TabelProvinsiPrimer"
 import TabelRincianPrimer from "@/components/report/ekspor/TabelRincianPrimer";
 import Pagination from "@/components/report/ekspor/Pagination";
 import ReportService, { PropinsiIzinPivot, RincianReportPrimer } from "@/services/ReportServices";
+import DashboardService, { RekapIzinPrimerResponse } from "@/services/DashboardServices";
 import { usePeriode } from "@/context/PeriodeContext";
 import { useUser } from "@/context/UserContext";
 import Button from "@/components/ui/button/Button";
 import { FileSpreadsheet, ArrowUp } from "lucide-react";
+import Badge from "@/components/ui/badge/Badge";
 
 // mapping kdIzin → label singkat
 const izinMap: Record<string, string> = {
@@ -34,6 +36,7 @@ export default function ReportingPrimer() {
   const [filterKdIzin, setFilterKdIzin] = useState<string | undefined>();
   const [filterKdDaerah, setFilterKdDaerah] = useState<string | undefined>();
   const [exporting, setExporting] = useState(false);
+  const [rekapIzin, setRekapIzin] = useState<RekapIzinPrimerResponse | null>(null);
 
   // ----- Fetch Pivot -----
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
@@ -69,6 +72,23 @@ export default function ReportingPrimer() {
       setTotalRecords(result.totalRecords);
     } catch (err) {
       console.error("Gagal fetch rincian report primer:", err);
+    }
+  };
+
+  const fetchRekapIzin = async (
+    startDate: string,
+    endDate: string
+  ) => {
+    try {
+      const result = await DashboardService.getRekapIzinPrimer(
+        startDate,
+        endDate,
+        1
+      );
+      setRekapIzin(result);
+      console.log("Rekap Izin Primer:", result);
+    } catch (err) {
+      console.error("Gagal fetch rekap izin:", err);
     }
   };
 
@@ -182,48 +202,86 @@ export default function ReportingPrimer() {
       filterKdIzin,
       filterKdDaerah
     );
+    fetchRekapIzin(periode.startDate, periode.endDate);
   }, [user, periode.startDate, periode.endDate, rincianPage, rincianLimit, filterKdIzin, filterKdDaerah]);
 
   return (
     <div>
       <PageBreadcrumb pageTitle="Laporan Sertifikasi Mutu Primer Per Provinsi" />
-      <div className="flex justify-end space-x-2 mb-2 -mt-5">
-        <Button
-          size="sm"
-          variant="outline"
-          className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50"
-          onClick={handleExportExcelPropinsi}
-          startIcon={
-            exporting ? (
-              <svg
-                className="animate-spin h-4 w-4 text-green-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
-              </svg>
-            ) : (
-              <FileSpreadsheet className="w-4 h-4" />
-            )
-          }
-          disabled={exporting}
-        >
-          {exporting ? "Processing..." : "Export ke Excel"}
-        </Button>
+      <div className="flex justify-between items-center mb-4">
+        {/* Badge Section */}
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="light" color="primary" size="md">Total CPIB</Badge>
+          <Badge variant="solid" color="primary" size="md">
+            {(rekapIzin?.rekap?.CPIB ?? 0).toLocaleString("id-ID")}
+          </Badge>
+
+          <Badge variant="light" color="success" size="md">Total CBIB</Badge>
+          <Badge variant="solid" color="success" size="md">
+            {(rekapIzin?.rekap?.CBIB ?? 0).toLocaleString("id-ID")}
+          </Badge>
+
+          <Badge variant="light" color="error" size="md">Total CPPIB</Badge>
+          <Badge variant="solid" color="error" size="md">
+            {(rekapIzin?.rekap?.CPPIB ?? 0).toLocaleString("id-ID")}
+          </Badge>
+
+          <Badge variant="light" color="info" size="md">Total CPOIB</Badge>
+          <Badge variant="solid" color="info" size="md">
+            {(rekapIzin?.rekap?.CPOIB ?? 0).toLocaleString("id-ID")}
+          </Badge>
+
+          <Badge variant="light" color="primary" size="md">Total CDOIB</Badge>
+          <Badge variant="solid" color="primary" size="md">
+            {(rekapIzin?.rekap?.CDOIB ?? 0).toLocaleString("id-ID")}
+          </Badge>
+
+          <Badge variant="light" color="success" size="md">Total Terbit</Badge>
+          <Badge variant="solid" color="success" size="md">
+            {(rekapIzin?.rekap?.total ?? 0).toLocaleString("id-ID")}
+          </Badge>
+        </div>
+
+        {/* Button Section */}
+        <div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50"
+            onClick={handleExportExcelPropinsi}
+            startIcon={
+              exporting ? (
+                <svg
+                  className="animate-spin h-4 w-4 text-green-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+              ) : (
+                <FileSpreadsheet className="w-4 h-4" />
+              )
+            }
+            disabled={exporting}
+          >
+            {exporting ? "Processing..." : "Export ke Excel"}
+          </Button>
+        </div>
       </div>
+
 
       <TabelProvinsiPrimer
         data={propinsiData}

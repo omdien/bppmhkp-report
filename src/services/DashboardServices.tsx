@@ -25,6 +25,28 @@ export interface EksporBulanan {
   NILAIUSD: number;   // nilai dalam USD
 }
 
+export interface RekapIzinPrimer {
+  propinsi: string;
+  total: number;
+  CPIB: number;
+  CBIB: number;
+  CPPIB: number;
+  CPOIB: number;
+  CDOIB: number;
+}
+
+export interface RekapIzinPrimerResponse {
+  data: RekapIzinPrimer[];
+  rekap: {
+    CPIB: number;
+    CBIB: number;
+    CPPIB: number;
+    CPOIB: number;
+    CDOIB: number;
+    total: number;
+  };
+}
+
 // ----- Service Class -----
 export default class DashboardService {
   static async getSummaryEkspor(
@@ -54,6 +76,21 @@ export default class DashboardService {
   ): Promise<EksporBulanan[]> {
     return dashboardFetch<EksporBulanan[]>(
       `/ekspor/bulanan/${kdUpt}/${tglAwal}/${tglAkhir}`
+    );
+  }
+
+  static async getRekapIzinPrimer(
+    startDate?: string,
+    endDate?: string,
+    limit?: number
+  ): Promise<RekapIzinPrimerResponse> {
+    const params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (limit !== undefined) params.append("limit", limit.toString());
+
+    return dashboardFetch<RekapIzinPrimerResponse>(
+      `/primer/rekap-izin-primer?${params.toString()}`
     );
   }
 }
