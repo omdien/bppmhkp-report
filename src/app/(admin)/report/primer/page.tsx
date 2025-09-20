@@ -187,6 +187,7 @@ export default function ReportingPrimer() {
     const elem = document.getElementById("rincian-laporan");
     elem?.scrollIntoView({ behavior: "smooth" });
   };
+  
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   // ----- useEffect fetch data -----

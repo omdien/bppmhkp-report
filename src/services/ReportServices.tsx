@@ -80,6 +80,66 @@ export interface RincianReportPrimer {
   keterangan?: string | null;
 }
 
+export interface ReportSKP {
+  id: number;
+  nama_upi: string;
+  nib: string;
+  provinsi: string;
+  kota_kabupaten: string;
+  alamat: string;
+  skala_usaha: string;
+  jenis_permohonan: string;
+  tanggal_pengajuan: string;
+  tanggal_rekomendasi: string;
+  tanggal_terbit: string;
+  tanggal_kadaluarsa: string;
+  nomor_skp: string;
+  nama_produk: string;
+  jenis_olahan: string;
+  peringkat: string;
+}
+
+export interface RekapSKPProvinsi {
+  provinsi: string;
+  jumlah: number;
+}
+
+export interface ReportPNBPFlat {
+  id_trx_svr_header: string;
+  no_bill: string;
+  ntpn: string;
+  date_payment: string;
+  date_pembukuan: string;
+  bank_id: string;
+  date_bill: string;
+  date_bill_exp: string;
+  kd_satker: string;
+  NM_UNIT: string;
+  nm_wjb_byr: string;
+  kd_satker_pemungut: string;
+  npwp: string;
+  nomor_aju: string;
+  nomor_pnbp: string;
+  kd_tarif: string;
+  pp: string;
+  kd_akun: string;
+  nominal: number;
+  volume: number;
+  satuan: string;
+  kd_lokasi: string;
+  kd_kabkota: string;
+  kd_upt: string;
+  bank_name: string;
+}
+
+// Summary untuk PNBP
+export interface ReportPNBPSummary {
+  totalBill: number;
+  totalNTPN: number;
+  totalNominal: number;
+  totalNomorAju: number;
+}
+
 
 // ----- Generic response type -----
 export type PaginatedResponse<T> = {
@@ -207,4 +267,145 @@ export default class ReportService {
     if (!res.ok) throw new Error(`Gagal export excel: ${res.statusText}`);
     return res.blob();
   }
+
+  /**
+   * Ambil data laporan SKP
+   * backend route: GET /api/report/skp/get-report-skp
+   * query: startDate, endDate, provinsi (opsional)
+   */
+  static async getReportSKP(
+    startDate: string,
+    endDate: string,
+    provinsi?: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<PaginatedResponse<ReportSKP>> {
+    let url = `/skp/get-report-skp?startDate=${startDate}&endDate=${endDate}&page=${page}&limit=${limit}`;
+    if (provinsi) url += `&provinsi=${encodeURIComponent(provinsi)}`;
+
+    return reportFetch<PaginatedResponse<ReportSKP>>(url);
+  }
+
+  static async getReportSKPToExcel(
+    startDate: string,
+    endDate: string,
+    provinsi?: string
+  ): Promise<Blob> {
+    // buat query params
+    const params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (provinsi) params.append("provinsi", provinsi);
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/skp/get-report-skp-to-excell?${params.toString()}`;
+
+    const res = await fetch(url, { credentials: "include" });
+
+    if (!res.ok) {
+      throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
+    }
+
+    return res.blob();
+  }
+
+  static async getRekapProvinsi(
+    startDate?: string,
+    endDate?: string,
+    limit?: number
+  ): Promise<RekapSKPProvinsi[]> {
+    let url = `/skp/rekap-provinsi`;
+    const params: string[] = [];
+
+    if (startDate && endDate) {
+      params.push(`startDate=${encodeURIComponent(startDate)}`);
+      params.push(`endDate=${encodeURIComponent(endDate)}`);
+    }
+
+    if (limit) {
+      params.push(`limit=${limit}`);
+    }
+
+    if (params.length > 0) {
+      url += `?${params.join("&")}`;
+    }
+
+    return reportFetch<RekapSKPProvinsi[]>(url);
+  }
+
+  static async getRekapProvinsiToExcel(
+    startDate: string,
+    endDate: string,
+    limit?: number
+  ): Promise<Blob> {
+    // buat query params
+    const params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (limit) params.append("limit", limit.toString());
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/skp/rekap-provinsi-to-excell?${params.toString()}`;
+
+    const res = await fetch(url, { credentials: "include" });
+
+    if (!res.ok) {
+      throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
+    }
+
+    return res.blob();
+  }
+
+  /**
+   * Ambil data report PNBP (flat join)
+   * backend route: GET /pnbp/report-pnbp-flat
+   */
+  static async getReportPNBPFlat(
+    filterType: "datePayment" | "dateBook",
+    startDate: string,
+    endDate: string,
+    idUPT: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<PaginatedResponse<ReportPNBPFlat>> {
+    let url = `/pnbp/report-pnbp-flat?filterType=${encodeURIComponent(filterType)}`;
+    url += `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+    url += `&idUPT=${encodeURIComponent(idUPT)}`;
+    url += `&page=${page}&limit=${limit}`;
+
+    return reportFetch<PaginatedResponse<ReportPNBPFlat>>(url);
+  }
+
+  static async getReportPNBPSummary(
+    filterType: "datePayment" | "dateBook",
+    startDate: string,
+    endDate: string,
+    idUPT: string
+  ): Promise<ReportPNBPSummary> {
+    let url = `/pnbp/report-pnbp-summary?filterType=${encodeURIComponent(filterType)}`;
+    url += `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+    url += `&idUPT=${encodeURIComponent(idUPT)}`;
+
+    // 🔹 Ambil response JSON
+    const res = await reportFetch<{ success: boolean; summary: ReportPNBPSummary }>(url);
+
+    return res.summary;
+  }
+
+  static async getReportPNBPFlatToExcell(
+    filterType: "datePayment" | "dateBook",
+    startDate: string,
+    endDate: string,
+    idUPT: string
+  ): Promise<Blob> {
+    // gunakan URL relatif agar base URL dari reportFetch otomatis
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/pnbp/report-pnbp-flat-to-excel?filterType=${encodeURIComponent(filterType)}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&idUPT=${encodeURIComponent(idUPT)}`;
+
+    const res = await fetch(url, { credentials: "include" });
+
+    if (!res.ok) {
+      throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
+    }
+
+    return res.blob();
+  }
+
 }

@@ -16,6 +16,7 @@ import {
   PlugInIcon,
   // TableIcon,
   // UserCircleIcon,
+  PnbpIcon,
 } from "../icons/index";
 // import SidebarWidget from "./SidebarWidget";
 // import { withBasePath } from "@/utils/path";
@@ -61,10 +62,13 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "SKP", path: "/report/skp", pro: false },
       { name: "PRIMER", path: "/report/primer", pro: false },
-      { name: "HACCP", path: "/report/haccp", pro: false },
       { name: "SMKHP", path: "/report/smkhp", pro: false },
-      { name: "PNBP", path: "/report/pnbp", pro: false },
     ],
+  },
+  {
+    icon: <PnbpIcon />,
+    name: "PNBP",
+    path: "/pnbp",   // langsung ke halaman dashboard
   },
 ];
 

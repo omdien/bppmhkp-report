@@ -54,6 +54,7 @@ import BellIcon from "./bell.svg";
 import FrekIcon from "./frek.svg";
 import RpIcon from "./rupiah.svg";
 import UsdIcon from "./usd.svg";
+import PnbpIcon from "./pnbp.svg";
 
 export {
   DownloadIcon,
@@ -112,4 +113,5 @@ export {
   FrekIcon,
   RpIcon,
   UsdIcon,
+  PnbpIcon,
 };

@@ -11,6 +11,7 @@ import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import DashboardService, { SummaryEkspor } from "@/services/DashboardServices";
 import { FileSpreadsheet } from "lucide-react";
+import { formatNumber, formatNumber2Dec, formatCurrency } from "@/utils/formating";
 
 export default function ReportPage() {
   const [dataSummary, setDataSummary] = useState<SummaryEkspor | null>(null);
@@ -91,23 +92,6 @@ export default function ReportPage() {
     }
   };
 
-  /* ------------------ Helpers ------------------ */
-  const formatNumber = (value: number) => new Intl.NumberFormat("id-ID").format(value);
-
-  const formatNumber2Dec = (value: number) =>
-    new Intl.NumberFormat("id-ID", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-
-  const formatCurrency = (value: number, currency: "IDR" | "USD") =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-
   return (
     <div>
       <PageBreadcrumb pageTitle="Laporan SMKHP" />
@@ -115,19 +99,19 @@ export default function ReportPage() {
         {/* --- Summary Badges --- */}
         <div className="flex">
           <div>
-          <Badge variant="light" color="primary" size="md">Frekuensi</Badge>
+            <Badge variant="light" color="primary" size="md">Frekuensi</Badge>
             <Badge variant="solid" color="primary" size="md">
               {formatNumber(dataSummary?.jumFreq ?? 0)}
             </Badge>{" "}
-         <Badge variant="light" color="success" size="md">Volume (Ton)</Badge>
+            <Badge variant="light" color="success" size="md">Volume (Ton)</Badge>
             <Badge variant="solid" color="success" size="md">
               {formatNumber2Dec((dataSummary?.totalVolume ?? 0) / 1000)}
             </Badge>{" "}
-          <Badge variant="light" color="error" size="md">Nilai IDR (Juta)</Badge>
+            <Badge variant="light" color="error" size="md">Nilai IDR (Juta)</Badge>
             <Badge variant="solid" color="error">
               {formatCurrency((dataSummary?.totalNilaiIDR ?? 0) / 1_000_000, "IDR")}
             </Badge>{" "}
-         <Badge variant="light" color="info" size="md">Nilai USD (Juta)</Badge>
+            <Badge variant="light" color="info" size="md">Nilai USD (Juta)</Badge>
             <Badge variant="solid" color="info" size="md">
               {formatCurrency((dataSummary?.totalNilaiUSD ?? 0) / 1_000_000, "USD")}
             </Badge>
