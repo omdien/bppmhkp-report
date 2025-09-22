@@ -52,6 +52,7 @@ export default function ReportingSKP() {
 
       const rows = Array.isArray(result) ? result : result;
       setRekapProvinsi(rows);
+      // console.log(rows);
     } catch (err) {
       console.error("Gagal fetch rekap SKP:", err);
       setRekapProvinsi([]);

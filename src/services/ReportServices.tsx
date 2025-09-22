@@ -329,7 +329,9 @@ export default class ReportService {
       url += `?${params.join("&")}`;
     }
 
-    return reportFetch<RekapSKPProvinsi[]>(url);
+    // return reportFetch<RekapSKPProvinsi[]>(url);
+    const res = await reportFetch<{ success: boolean; data: RekapSKPProvinsi[] }>(url);
+    return res.data; // selalu balikin array
   }
 
   static async getRekapProvinsiToExcel(
