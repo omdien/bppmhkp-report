@@ -15,7 +15,7 @@ const Features = () => {
   ];
 
   return (
-    <div id="fitur" className='pt-16 pb-16 scroll-mt-22 sm:scroll-mt-0'>
+    <div id="fitur" className='w-full h-screen pt-36 pb-16 scroll-mt-22 sm:scroll-mt-0'>
       <div className='w-[80%] mx-auto'>
         {/* Heading */}
         <h2 className='text-2xl sm:text-3xl font-bold text-center text-gray-800 dark:text-white mb-10'>

@@ -739,3 +739,7 @@ span.flatpickr-weekday,
   opacity: 0.8;
   cursor: grabbing; /* Changes the cursor to indicate dragging */
 }
+
+.leaflet-container {
+  z-index: 0 !important; /* default Leaflet = 400 */
+}

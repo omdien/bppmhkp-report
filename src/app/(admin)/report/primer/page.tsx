@@ -10,7 +10,7 @@ import DashboardService, { RekapIzinPrimerResponse } from "@/services/DashboardS
 import { usePeriode } from "@/context/PeriodeContext";
 import { useUser } from "@/context/UserContext";
 import Button from "@/components/ui/button/Button";
-import { FileSpreadsheet, ArrowUp } from "lucide-react";
+import { FileSpreadsheet } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 
 // mapping kdIzin → label singkat
@@ -86,7 +86,6 @@ export default function ReportingPrimer() {
         1
       );
       setRekapIzin(result);
-      console.log("Rekap Izin Primer:", result);
     } catch (err) {
       console.error("Gagal fetch rekap izin:", err);
     }
@@ -188,8 +187,6 @@ export default function ReportingPrimer() {
     elem?.scrollIntoView({ behavior: "smooth" });
   };
   
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-
   // ----- useEffect fetch data -----
   useEffect(() => {
     if (!user || !periode.startDate || !periode.endDate) return;
@@ -341,11 +338,6 @@ export default function ReportingPrimer() {
 
           <Button size="sm" variant="outline" onClick={handleResetFilter}>
             Reset Filter
-          </Button>
-
-          <Button size="sm" variant="outline" onClick={scrollToTop}>
-            <ArrowUp className="w-4 h-4 mr-2" />
-            Kembali ke Atas
           </Button>
         </div>
       </div>

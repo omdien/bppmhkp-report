@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { usePathname } from "next/navigation";
 import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
 import { UserProvider } from "@/context/UserContext";
+import "leaflet/dist/leaflet.css";
 
 const outfit = Outfit({
   subsets: ["latin"],

@@ -272,7 +272,7 @@ export default function ReportingSKP() {
 
       <div ref={rincianRef} id="rincian-laporan" className="flex items-center mt-8">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-          Rincian SKP
+          Rincian SKP {selectedProvinsi}
         </h2>
 
         <div className="ml-auto flex space-x-2">
@@ -315,11 +315,6 @@ export default function ReportingSKP() {
           <Button size="sm" variant="outline" onClick={handleResetFilter}>
             Reset Filter
           </Button>
-
-          {/* <Button size="sm" variant="outline" onClick={scrollToTop}>
-            <ArrowUp className="w-4 h-4 mr-2" />
-            Kembali ke Atas
-          </Button> */}
         </div>
       </div>
 

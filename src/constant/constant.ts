@@ -6,17 +6,17 @@ export const navLinks = [
   },
   {
     id: 2,
-    href: "#fitur",
-    label: "Fitur",
-  },
-  {
-    id: 3,
-    href: "#",
+    href: "#tentang",
     label: "Tentang",
   },
   {
-    id: 4,
-    href: "#",
-    label: "Tugas",
+    id: 3,
+    href: "#fitur",
+    label: "Fitur",
   },
+  // {
+  //   id: 4,
+  //   href: "#",
+  //   label: "Tugas",
+  // },
 ];
