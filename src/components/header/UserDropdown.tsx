@@ -32,7 +32,7 @@ export default function UserDropdown() {
 
       if (res.ok) {
         clearUser();
-        router.push("/login"); // arahkan ke halaman login
+        router.push("/"); // arahkan ke halaman login
       } else {
         console.error("Logout failed");
       }

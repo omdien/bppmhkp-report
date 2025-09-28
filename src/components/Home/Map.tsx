@@ -114,7 +114,9 @@ export default function MapIndonesiaLeaflet() {
 
     const popupContent = `
     <div>
-      <strong>${PROVINSI ?? "-"} Tahun 2025</strong><br/>
+      <strong>SERTIFIKASI BPPMHKP</strong><br/>
+      <strong>Tahun 2025</strong><br/>
+      <strong>Provinsi: ${PROVINSI ?? "-"}</strong><br/>
       CPPIB: ${CPPIB}<br/>
       CPIB: ${CPIB}<br/>
       CPOIB: ${CPOIB}<br/>
