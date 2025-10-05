@@ -33,6 +33,7 @@ export interface RekapIzinPrimer {
   CPPIB: number;
   CPOIB: number;
   CDOIB: number;
+  CBIB_Kapal: number;   
 }
 
 export interface RekapIzinPrimerResponse {
@@ -43,6 +44,7 @@ export interface RekapIzinPrimerResponse {
     CPPIB: number;
     CPOIB: number;
     CDOIB: number;
+    CBIB_Kapal: number; 
     total: number;
   };
 }

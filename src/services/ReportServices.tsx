@@ -42,7 +42,7 @@ export interface PropinsiIzinPivot {
   CPPIB: number;
   CPIB: number;
   CPOIB: number;
-  "CBIB Kapal": number;
+  CBIB_Kapal: number;
   CDOIB: number;
   CBIB: number;
   nama_propinsi?: string;
@@ -140,6 +140,38 @@ export interface ReportPNBPSummary {
   totalNomorAju: number;
 }
 
+// ---- Interface untuk CBIB Kapal ----
+export interface CBIBKapal {
+  id_cbib: number;
+  no_cbib: string;
+  nama_kapal: string;
+  nib: string;
+  alamat: string;
+  gt: number;
+  tipe_kapal: string;
+  tgl_inspeksi: string;
+  tgl_laporan: string | null;
+  jenis_produk: string;
+  grade_scpib: string;
+  tgl_terbit: string;
+  tgl_kadaluarsa: string;
+  upt_inspeksi: string;
+  nama_pelabuhan: string;
+  nama_provinsi: string;
+  nama_pemilik: string;
+  telepon: string;
+  nahkoda_kapal: string;
+  jumlah_abk: number;
+  alat_tangkap: string;
+  daerah_tangkap: string;
+  no_siup: string;
+  tgl_siup: string;
+  no_kbli: string;
+  no_skkp_bkp_nk: string;
+  tgl_skkp_bkp_nk: string;
+  pj_pusat: string;
+}
+
 
 // ----- Generic response type -----
 export type PaginatedResponse<T> = {
@@ -196,7 +228,7 @@ export default class ReportService {
     tglAkhir: string
   ): Promise<PropinsiIzinPivot[]> {
     return reportFetch<PropinsiIzinPivot[]>(
-      `/primer/propinsi-izin?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`
+      `/primer/pivot-propinsi-izin?startDate=${tglAwal}&endDate=${tglAkhir}`
     );
   }
 
@@ -400,6 +432,50 @@ export default class ReportService {
   ): Promise<Blob> {
     // gunakan URL relatif agar base URL dari reportFetch otomatis
     const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/pnbp/report-pnbp-flat-to-excel?filterType=${encodeURIComponent(filterType)}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&idUPT=${encodeURIComponent(idUPT)}`;
+
+    const res = await fetch(url, { credentials: "include" });
+
+    if (!res.ok) {
+      throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
+    }
+
+    return res.blob();
+  }
+
+  static async getReportCBIBKapal(
+    startDate: string,
+    endDate: string,
+    provinsi?: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<PaginatedResponse<CBIBKapal>> {
+    let url = `/cbibkapal/get-report-cbib-kapal`;
+    url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+    url += `&page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
+    if (provinsi) url += `&provinsi=${encodeURIComponent(provinsi)}`;
+
+    // 🔹 Ambil response JSON
+    const res = await reportFetch<PaginatedResponse<CBIBKapal>>(url);
+
+    return res; // langsung sesuai generic type
+  }
+
+  /**
+   * Export laporan CBIB Kapal ke Excel
+   * backend route: GET /api/report/cbibkapal/get-report-cbib-kapal-to-excell
+   */
+  static async exportRincianCBIBKapalToExcel(
+    startDate: string,
+    endDate: string,
+    provinsi?: string
+  ): Promise<Blob> {
+    // buat query params
+    const params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (provinsi) params.append("provinsi", provinsi);
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/cbibkapal/get-report-cbib-kapal-to-excell?${params.toString()}`;
 
     const res = await fetch(url, { credentials: "include" });
 

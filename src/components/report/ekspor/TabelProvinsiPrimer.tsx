@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Table,
@@ -9,11 +11,12 @@ import {
 import { PropinsiIzinPivot } from "@/services/ReportServices";
 
 // 🔑 mapping key → kode izin backend
+// ⚠️ CBIB_Kapal & JUMLAH sengaja undefined agar bisa diproses khusus di handler
 const izinMapping: Record<string, string | undefined> = {
   CPPIB: "032000000014",
   CPIB: "032000000034",
   CPOIB: "032000000019",
-  "CBIB Kapal": "032000000033",
+  CBIB_Kapal: undefined, // 🚩 biarkan undefined
   CDOIB: "032000000036",
   CBIB: "032000000068",
   JUMLAH: undefined,
@@ -33,22 +36,34 @@ const columns: Column<PropinsiIzinPivot>[] = [
   { key: "CPPIB", label: "CPPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPIB", label: "CPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPOIB", label: "CPOIB", align: "right", width: "w-14", clickable: true },
-  { key: "CBIB Kapal", label: "CBIB Kapal", align: "right", width: "w-16", clickable: true },
+  { key: "CBIB_Kapal", label: "CBIB Kapal", align: "right", width: "w-16", clickable: true },
   { key: "CDOIB", label: "CDOIB", align: "right", width: "w-14", clickable: true },
   { key: "CBIB", label: "CBIB", align: "right", width: "w-14", clickable: true },
   { key: "JUMLAH", label: "JUMLAH", align: "right", width: "w-16", clickable: true },
 ];
 
-interface Props {
+type Props = {
   data: PropinsiIzinPivot[];
   page: number;
   limit: number;
-  onCellClick?: (kdIzin?: string, kodePropinsi?: string) => void;
-}
+  onCellClick?: (
+    kdIzin?: string,
+    kodePropinsi?: string,
+    namaProvinsi?: string,
+    colKey?: string   // ✅ tambahan colKey
+  ) => void;
+};
 
-export default function TabelProvinsiPrimer({ data, page, limit, onCellClick }: Props) {
-  const headerClass = "px-2 py-2 font-semibold text-white text-xs text-center";
-  const cellClass = "px-2 py-2 text-gray-800 dark:text-gray-200 text-xs";
+export default function TabelProvinsiPrimer({
+  data,
+  page,
+  limit,
+  onCellClick,
+}: Props) {
+  const headerClass =
+    "px-2 py-2 font-semibold text-white text-xs text-center";
+  const cellClass =
+    "px-2 py-2 text-gray-800 dark:text-gray-200 text-xs";
 
   const mid = Math.ceil(data.length / 2);
   const leftData = data.slice(0, mid);
@@ -64,14 +79,15 @@ export default function TabelProvinsiPrimer({ data, page, limit, onCellClick }: 
         {/* Header */}
         <TableHeader>
           <TableRow className="bg-blue-500 dark:bg-blue-700">
-            <TableCell isHeader className={`${headerClass} w-8`}>#</TableCell>
+            <TableCell isHeader className={`${headerClass} w-8`}>
+              #
+            </TableCell>
             {columns.map((col) => (
               <TableCell
                 key={col.key as string}
                 isHeader
-                className={`${headerClass} ${col.width ?? ""} ${
-                  col.align === "right" ? "text-right" : "text-left"
-                } whitespace-normal break-words`}
+                className={`${headerClass} ${col.width ?? ""} ${col.align === "right" ? "text-right" : "text-left"
+                  } whitespace-normal break-words`}
               >
                 {col.label}
               </TableCell>
@@ -85,11 +101,10 @@ export default function TabelProvinsiPrimer({ data, page, limit, onCellClick }: 
             tableData.map((row, idx) => (
               <TableRow
                 key={idx}
-                className={`${
-                  idx % 2 === 0
-                    ? "bg-white dark:bg-gray-900"
-                    : "bg-gray-50 dark:bg-gray-800"
-                } hover:bg-blue-50 dark:hover:bg-gray-700`}
+                className={`${idx % 2 === 0
+                  ? "bg-white dark:bg-gray-900"
+                  : "bg-gray-50 dark:bg-gray-800"
+                  } hover:bg-blue-50 dark:hover:bg-gray-700`}
               >
                 <TableCell className={`${cellClass} text-center`}>
                   {startIndex + idx + 1}
@@ -97,7 +112,9 @@ export default function TabelProvinsiPrimer({ data, page, limit, onCellClick }: 
 
                 {columns.map((col) => {
                   const rawValue = row[col.key as keyof PropinsiIzinPivot];
-                  const value = col.formatter ? col.formatter(rawValue, row) : rawValue;
+                  const value = col.formatter
+                    ? col.formatter(rawValue, row)
+                    : rawValue;
 
                   if (col.clickable) {
                     const isClickable = Number(rawValue) > 0;
@@ -105,15 +122,22 @@ export default function TabelProvinsiPrimer({ data, page, limit, onCellClick }: 
                       return (
                         <TableCell
                           key={col.key as string}
-                          className={`${cellClass} ${col.width ?? ""} ${
-                            col.align === "right" ? "text-right" : "text-left"
-                          }`}
+                          className={`${cellClass} ${col.width ?? ""} ${col.align === "right" ? "text-right" : "text-left"
+                            }`}
                         >
                           <button
                             type="button"
                             onClick={() => {
                               const kdIzin = izinMapping[col.key as string];
-                              onCellClick?.(kdIzin, row.kode_propinsi);
+                              const kodePropinsi = row.kode_propinsi;
+                              const namaProvinsi =
+                                row.nama_propinsi?.trim() || row.propinsi.trim();
+                              onCellClick?.(
+                                kdIzin,
+                                kodePropinsi,
+                                namaProvinsi,
+                                col.key
+                              );
                             }}
                             className="w-full text-right cursor-pointer hover:underline text-blue-600 font-bold"
                           >
@@ -127,9 +151,8 @@ export default function TabelProvinsiPrimer({ data, page, limit, onCellClick }: 
                   return (
                     <TableCell
                       key={col.key as string}
-                      className={`${cellClass} ${col.width ?? ""} ${
-                        col.align === "right" ? "text-right" : "text-left"
-                      } break-words`}
+                      className={`${cellClass} ${col.width ?? ""} ${col.align === "right" ? "text-right" : "text-left"
+                        } break-words`}
                     >
                       {value}
                     </TableCell>
