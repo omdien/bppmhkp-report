@@ -2,38 +2,49 @@
 const DASHBOARD_API_URL = process.env.NEXT_PUBLIC_API_URL_DASHBOARD;
 const REPORT_API_URL = process.env.NEXT_PUBLIC_API_URL_REPORT;
 
+/**
+ * Base fetch helper — otomatis sertakan cookie SSO (HttpOnly)
+ * Tidak perlu lagi pakai Authorization header manual.
+ */
 async function baseFetch<T>(
   baseUrl: string,
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  // ambil token dari localStorage kalau ada
-  let token: string | null = null;
-  if (typeof window !== "undefined") {
-    token = localStorage.getItem("token");
-  }
-
   const res = await fetch(`${baseUrl}${endpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
+      ...(options.headers || {}), // jika ada tambahan header custom
     },
-    credentials: "include",
+    credentials: "include", // penting: kirim cookie cross-domain
   });
 
   if (!res.ok) {
+    // opsional: bisa logging lebih detail di dev
+    console.error(`❌ Fetch error: ${res.status} ${res.statusText}`);
     throw new Error(`API error: ${res.status} ${res.statusText}`);
   }
 
   return res.json();
 }
 
-export function dashboardFetch<T>(endpoint: string, options: RequestInit = {}) {
+/**
+ * Wrapper untuk request ke backend Dashboard.
+ */
+export function dashboardFetch<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
   return baseFetch<T>(DASHBOARD_API_URL!, endpoint, options);
 }
 
-export function reportFetch<T>(endpoint: string, options: RequestInit = {}) {
+/**
+ * Wrapper untuk request ke backend Report.
+ */
+export function reportFetch<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
   return baseFetch<T>(REPORT_API_URL!, endpoint, options);
 }
