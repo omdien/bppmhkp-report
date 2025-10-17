@@ -227,7 +227,6 @@ export default function ReportingPrimer() {
 
   const handleExportKapal = async () => {
     if (!periode.startDate || !periode.endDate) return;
-    console.log("Export filterNamaProvinsi:", filterNamaProvinsi);
     
     try {
       setExporting(true);

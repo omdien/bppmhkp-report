@@ -33,7 +33,7 @@ export interface RekapIzinPrimer {
   CPPIB: number;
   CPOIB: number;
   CDOIB: number;
-  CBIB_Kapal: number;   
+  CBIB_Kapal: number;
 }
 
 export interface RekapIzinPrimerResponse {
@@ -44,9 +44,19 @@ export interface RekapIzinPrimerResponse {
     CPPIB: number;
     CPOIB: number;
     CDOIB: number;
-    CBIB_Kapal: number; 
+    CBIB_Kapal: number;
     total: number;
   };
+}
+
+export interface PropinsiPerIzin {
+  URAIAN_PROPINSI: string;
+  Jumlah: number;
+}
+
+export interface PropinsiPerIzinResponse {
+  success: boolean;
+  data: PropinsiPerIzin[];
 }
 
 // ----- Service Class -----
@@ -93,6 +103,23 @@ export default class DashboardService {
 
     return dashboardFetch<RekapIzinPrimerResponse>(
       `/primer/rekap-izin-primer?${params.toString()}`
+    );
+  }
+
+  static async getPropinsiPerIzin(
+    startDate: string,
+    endDate: string,
+    kdIzin: string,
+    limit?: number
+  ): Promise<PropinsiPerIzinResponse> {
+    const params = new URLSearchParams();
+    params.append("startDate", startDate);
+    params.append("endDate", endDate);
+    params.append("kdIzin", kdIzin);
+    if (limit) params.append("limit", limit.toString());
+
+    return dashboardFetch<PropinsiPerIzinResponse>(
+      `/primer/propinsi-per-izin?${params.toString()}`
     );
   }
 }

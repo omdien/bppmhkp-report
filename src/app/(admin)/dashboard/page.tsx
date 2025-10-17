@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DashboardEkspor } from "@/components/dashboard/ekspor/DashboardEkspor";
 import { DashboardPrimer} from "@/components/dashboard/primer/DahsboardPrimer";
+import { DashboardSKP } from "@/components/dashboard/skp/DashboardSKP";
 
 export default function ReportingDashboard() {
   const [activeTab, setActiveTab] = useState("smkhp");
@@ -47,9 +48,10 @@ export default function ReportingDashboard() {
       )}
 
       {activeTab === "skp" && (
-        <div className="p-4 border rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Dashboard SKP</h2>
-          <p>Isi konten khusus SKP di sini...</p>
+        <div className="grid grid-cols-12 gap-4 md:gap-6">
+          <div className="col-span-12 space-y-6 xl:col-span-12">
+            <DashboardSKP />
+          </div>
         </div>
       )}
     </div>

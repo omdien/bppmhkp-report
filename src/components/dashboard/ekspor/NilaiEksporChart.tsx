@@ -30,31 +30,6 @@ export default function NilaiEksporChart({
     return start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
   }, [startDate, endDate]);
 
-  // X-axis (bulan / tanggal)
-  // const categorieso =
-  //   periode === "bulanan"
-  //     ? data.map((d) => (d.BULAN ?? d.BULAN)) // fallback ke BULAN kalau dari DB uppercase
-  //     : data.map((d) => (d.TANGGAL ?? d.TANGGAL));
-
-  // Series IDR dan USD (dibagi 1.000.000 biar jutaan)
-  // const serieso = [
-  //   {
-  //     name: "Nilai Ekspor (IDR)",
-  //     type: "line",
-  //     data: data.map((d) =>
-  //       (d.NILAIIDR ?? d.NILAIIDR) / 1_000_000
-  //     ),
-  //   },
-  //   {
-  //     name: "Nilai Ekspor (USD)",
-  //     type: "line",
-  //     data: data.map((d) =>
-  //       (d.NILAIUSD ?? d.NILAIUSD) / 1_000_000
-  //     ),
-  //   },
-  // ];
-
-
   const { categories, series } = useMemo(() => {
     if (isSameMonth) {
       // Data harian

@@ -100,6 +100,7 @@ export interface ReportSKP {
 }
 
 export interface RekapSKPProvinsi {
+  provinsi_id: string;
   provinsi: string;
   jumlah: number;
 }
