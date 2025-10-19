@@ -47,7 +47,7 @@ const Hero = () => {
 
                     {/* description */}
                     <p className='text-xs sm:text-sm md:text-base font-medium text-gray-700'>
-                        Aplikasi yang menampilkan dashboard dan laporan dari aplikasi Siapmutu BPPMHKP, terdiri dari Dashboard & report Sertifikat Mutu Hasil Kelautan dan Perikanan (SMKHP), Dashboard & report Sertifikasi Pusat Primer, Dashboard & report Sertifikasi Pusat Pasca Panen
+                        Aplikasi yang menampilkan Dashboard dan Laporan dari Aplikasi SIAPMUTU BPPMHKP, terdiri dari Dashboard dan Report Sertifikat Mutu Hasil Kelautan dan Perikanan (SMKHP), Dashboard dan Report Sertifikasi Pusat Sertifikasi Mutu Primer, Dashboard dan Report Sertifikasi Mutu Pusat Paska Panen
                     </p>
 
                     {/* button group */}
