@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 
 import { DashboardEkspor } from "@/components/dashboard/ekspor/DashboardEkspor";
 import { DashboardPrimer} from "@/components/dashboard/primer/DahsboardPrimer";
-// import { DashboardSKP } from "@/components/dashboard/skp/DashboardSKP";
-const DashboardSKP = dynamic(
-  () => import("@/components/dashboard/skp/DashboardSKP"),
-  { ssr: false } // ⛔ hindari eksekusi di server
-);
+import { DashboardSKP } from "@/components/dashboard/skp/DashboardSKP";
+// const DashboardSKP = dynamic(
+//   () => import("@/components/dashboard/skp/DashboardSKP"),
+//   { ssr: false } 
+// );
 
 // const DashboardEkspor = dynamic(() => import("@/components/dashboard/ekspor/DashboardEkspor"), { ssr: false });
 // const DashboardPrimer = dynamic(() => import("@/components/dashboard/primer/DahsboardPrimer"), { ssr: false });
 // const DashboardSKP = dynamic(() => import("@/components/dashboard/skp/DashboardSKP"), { ssr: false });
 
 export default function ReportingDashboard() {
-  const [activeTab, setActiveTab] = useState("smkhp");
+  const [activeTab, setActiveTab] = useState("primer");
 
   return (
     <div>
