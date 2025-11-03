@@ -7,8 +7,10 @@ import {
   FaIndustry,
   FaMapMarkedAlt,
   FaCity,
-  IconType,
+  // IconType,
 } from "react-icons/fa";
+
+import { IconType } from "react-icons"; // ✅ ambil dari react-icons langsung
 
 /* ------------------ Helper ------------------ */
 const formatNumber = (value: number): string =>

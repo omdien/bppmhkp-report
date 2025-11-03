@@ -20,19 +20,29 @@ const KomposisiOlahanSKPChart: React.FC<KomposisiOlahanSKPChartProps> = ({ data 
   const labels = sortedData.map((item) => item.jenis_olahan);
   const series = sortedData.map((item) => item.jumlah);
 
+  const colors = [
+    "#14b8a6", // teal
+    "#3b82f6", // blue
+    "#f59e0b", // amber
+    "#ef4444", // red
+    "#22c55e", // green
+    "#6366f1", // indigo
+    "#a855f7", // purple
+    "#eab308", // yellow
+    "#0ea5e9", // cyan
+  ];
+
   const options: ApexCharts.ApexOptions = {
     chart: {
       type: "donut",
       background: "transparent",
       toolbar: { show: false },
+      height: 260,
     },
     labels,
+    colors,
     legend: {
-      position: "bottom",
-      fontSize: "13px",
-      labels: {
-        colors: theme === "dark" ? "#e5e7eb" : "#374151",
-      },
+      show: false, // 🔹 kita sembunyikan legend bawaan Apex, pakai custom legend di bawah
     },
     dataLabels: {
       enabled: true,
@@ -49,16 +59,6 @@ const KomposisiOlahanSKPChart: React.FC<KomposisiOlahanSKPChartProps> = ({ data 
         formatter: (val: number) => `${val.toLocaleString()} SKP`,
       },
     },
-    colors: [
-      "#14b8a6", // teal
-      "#3b82f6", // blue
-      "#f59e0b", // amber
-      "#ef4444", // red
-      "#22c55e", // green
-      "#6366f1", // indigo
-      "#a855f7", // purple
-      "#eab308", // yellow
-    ],
     stroke: {
       colors: [theme === "dark" ? "#1f2937" : "#fff"],
     },
@@ -68,7 +68,7 @@ const KomposisiOlahanSKPChart: React.FC<KomposisiOlahanSKPChartProps> = ({ data 
     plotOptions: {
       pie: {
         donut: {
-          size: "65%",
+          size: "50%", // 🔹 diameter seragam
           labels: {
             show: true,
             total: {
@@ -77,14 +77,9 @@ const KomposisiOlahanSKPChart: React.FC<KomposisiOlahanSKPChartProps> = ({ data 
               fontSize: "14px",
               color: theme === "dark" ? "#e5e7eb" : "#374151",
               formatter: (w) => {
-                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
                 return total.toLocaleString();
               },
-            },
-            value: {
-              fontSize: "12px",
-              color: theme === "dark" ? "#e5e7eb" : "#374151",
-              formatter: (val: number) => val.toLocaleString(),
             },
           },
         },
@@ -94,16 +89,33 @@ const KomposisiOlahanSKPChart: React.FC<KomposisiOlahanSKPChartProps> = ({ data 
       {
         breakpoint: 768,
         options: {
-          chart: { height: 320 },
-          legend: { position: "bottom" },
+          chart: { height: 260 },
         },
       },
     ],
   };
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <ReactApexChart options={options} series={series} type="donut" height={380} />
+    <div className="w-full flex flex-col items-center">
+      {/* Chart */}
+      <div className="w-[240px] h-[240px] flex justify-center items-center">
+        <ReactApexChart options={options} series={series} type="donut" height={240} />
+      </div>
+
+      {/* Legend Custom (horizontal scroll kalau panjang) */}
+      <div className="w-full overflow-x-auto mt-3 scrollbar-thin">
+        <div className="flex justify-center gap-3 px-2 whitespace-nowrap">
+          {labels.map((label, i) => (
+            <div key={i} className="flex items-center gap-1 text-sm">
+              <span
+                className="inline-block w-3 h-3 rounded-full"
+                style={{ backgroundColor: colors[i % colors.length] }}
+              ></span>
+              <span>{label || "-"}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

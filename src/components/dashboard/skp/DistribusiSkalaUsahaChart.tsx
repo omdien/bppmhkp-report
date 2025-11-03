@@ -3,7 +3,8 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { DistribusiSkalaUsahaSKP } from "@/services/DashboardServices"; 
+import { DistribusiSkalaUsahaSKP } from "@/services/DashboardServices";
+
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface DistribusiSkalaUsahaChartProps {
@@ -13,22 +14,43 @@ interface DistribusiSkalaUsahaChartProps {
 const DistribusiSkalaUsahaChart: React.FC<DistribusiSkalaUsahaChartProps> = ({ data }) => {
   const { theme } = useTheme();
 
-  const labels = data.map((item) => item.skala_usaha);
-  const series = data.map((item) => item.jumlah);
+  // Guard: pastikan array
+  const safeData = Array.isArray(data) ? data : [];
+
+  // Urutkan dari jumlah terbesar agar tampilan konsisten
+  const sortedData = [...safeData].sort((a, b) => b.jumlah - a.jumlah);
+
+  const labels = sortedData.map((item) => item.skala_usaha ?? "-");
+  const series = sortedData.map((item) => item.jumlah ?? 0);
+
+  const colors = [
+    "#22c55e", // green
+    "#3b82f6", // blue
+    "#f59e0b", // amber
+    "#ef4444", // red
+    "#8b5cf6", // violet
+    "#14b8a6", // teal
+  ];
 
   const options: ApexCharts.ApexOptions = {
     chart: {
       type: "donut",
-      toolbar: { show: false },
       background: "transparent",
+      toolbar: { show: false },
     },
     labels,
+    // sembunyikan legend bawaan agar tidak memengaruhi ukuran donut
     legend: {
-      position: "bottom",
-      fontSize: "14px",
-      labels: {
-        colors: theme === "dark" ? "#d1d5db" : "#374151",
+      show: false,
+    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        colors: [theme === "dark" ? "#fff" : "#111"],
+        fontSize: "12px",
+        fontWeight: "bold",
       },
+      formatter: (val: number) => `${val.toFixed(1)}%`,
     },
     tooltip: {
       theme: theme === "dark" ? "dark" : "light",
@@ -36,32 +58,36 @@ const DistribusiSkalaUsahaChart: React.FC<DistribusiSkalaUsahaChartProps> = ({ d
         formatter: (val: number) => `${val.toLocaleString()} SKP`,
       },
     },
-    dataLabels: {
-      enabled: true,
-      dropShadow: { enabled: false },
-      style: {
-        fontSize: "13px",
-        colors: [theme === "dark" ? "#f3f4f6" : "#111827"],
-      },
-      formatter: (val: number) => `${val.toFixed(1)}%`,
+    colors,
+    stroke: {
+      colors: [theme === "dark" ? "#1f2937" : "#fff"],
     },
     theme: {
       mode: theme === "dark" ? "dark" : "light",
     },
-    colors: ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444"],
     plotOptions: {
       pie: {
         donut: {
-          size: "65%",
+          size: "50%", // diameter seragam
           labels: {
             show: true,
             total: {
               show: true,
               label: "Total SKP",
-              color: theme === "dark" ? "#f3f4f6" : "#111827",
               fontSize: "14px",
-              formatter: () =>
-                series.reduce((acc, val) => acc + val, 0).toLocaleString(),
+              color: theme === "dark" ? "#e5e7eb" : "#374151",
+              formatter: (w) => {
+                const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
+                return total.toLocaleString();
+              },
+            },
+            value: {
+              fontSize: "12px",
+              color: theme === "dark" ? "#e5e7eb" : "#374151",
+              formatter: (val: string) => {
+                const num = Number(val);
+                return isNaN(num) ? val : num.toLocaleString();
+              },
             },
           },
         },
@@ -69,18 +95,35 @@ const DistribusiSkalaUsahaChart: React.FC<DistribusiSkalaUsahaChartProps> = ({ d
     },
     responsive: [
       {
-        breakpoint: 640,
+        breakpoint: 768,
         options: {
-          chart: { width: "100%" },
-          legend: { position: "bottom" },
+          chart: { height: 260 },
         },
       },
     ],
   };
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <ReactApexChart options={options} series={series} type="donut" height={320} />
+    <div className="w-full flex flex-col items-center">
+      {/* Fixed box supaya semua donut sama ukuran */}
+      <div className="w-[240px] h-[240px] flex justify-center items-center">
+        <ReactApexChart options={options} series={series} type="donut" height={240} />
+      </div>
+
+      {/* Custom horizontal legend: satu baris, scrollable bila panjang */}
+      <div className="w-full overflow-x-auto mt-3 scrollbar-thin">
+        <div className="flex justify-center gap-3 px-2 whitespace-nowrap">
+          {labels.map((label, i) => (
+            <div key={i} className="flex items-center gap-2 text-sm">
+              <span
+                className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                style={{ backgroundColor: colors[i % colors.length] }}
+              />
+              <span className="max-w-[120px] truncate">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

@@ -31,12 +31,7 @@ const KomposisiPeringkatSKPChart: React.FC<KomposisiPeringkatSKPChartProps> = ({
     labels,
     colors,
     legend: {
-      position: "bottom",
-      fontSize: "13px",
-      labels: {
-        colors: theme === "dark" ? "#e5e7eb" : "#374151",
-      },
-      markers: { width: 12, height: 12, radius: 12 },
+      show: false, // legend disembunyikan agar tidak memengaruhi ukuran donat
     },
     dataLabels: {
       enabled: true,
@@ -62,7 +57,7 @@ const KomposisiPeringkatSKPChart: React.FC<KomposisiPeringkatSKPChartProps> = ({
     plotOptions: {
       pie: {
         donut: {
-          size: "65%",
+          size: "50%", // sama seperti DistribusiSkalaUsahaChart
           labels: {
             show: true,
             total: {
@@ -71,19 +66,53 @@ const KomposisiPeringkatSKPChart: React.FC<KomposisiPeringkatSKPChartProps> = ({
               fontSize: "14px",
               color: theme === "dark" ? "#e5e7eb" : "#374151",
               formatter: (w) => {
-                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
                 return total.toLocaleString();
+              },
+            },
+            value: {
+              fontSize: "12px",
+              color: theme === "dark" ? "#e5e7eb" : "#374151",
+              formatter: (val: string) => {
+                const num = Number(val);
+                return isNaN(num) ? val : num.toLocaleString();
               },
             },
           },
         },
       },
     },
+    responsive: [
+      {
+        breakpoint: 768,
+        options: {
+          chart: { height: 260 },
+        },
+      },
+    ],
   };
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <ReactApexChart options={options} series={series} type="donut" height={300} />
+    <div className="w-full flex flex-col items-center">
+      {/* Pastikan ukuran box sama persis */}
+      <div className="w-[240px] h-[240px] flex justify-center items-center">
+        <ReactApexChart options={options} series={series} type="donut" height={240} />
+      </div>
+
+      {/* Custom legend horizontal agar konsisten */}
+      <div className="w-full overflow-x-auto mt-3 scrollbar-thin">
+        <div className="flex justify-center gap-3 px-2 whitespace-nowrap">
+          {labels.map((label, i) => (
+            <div key={i} className="flex items-center gap-2 text-sm">
+              <span
+                className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                style={{ backgroundColor: colors[i % colors.length] }}
+              />
+              <span className="max-w-[120px] truncate">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

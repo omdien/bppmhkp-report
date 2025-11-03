@@ -323,7 +323,7 @@ const AppSidebar: React.FC = () => {
                 width={150}
                 height={40}
               /> */}
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Image
                   src={logo}
                   alt="Logo BPPMHKP"
@@ -334,6 +334,29 @@ const AppSidebar: React.FC = () => {
                 <div className="text-2xl font-bold sm:text-3xl">
                   <span className="text-blue-600">BPP</span>
                   <span className="text-orange-500">MHKP</span>
+                </div>
+              </div> */}
+              <div className="flex items-center space-x-2">
+                <Image
+                  src={logo}
+                  alt="Logo BPPMHKP"
+                  width={40}
+                  height={40}
+                  priority
+                  className="object-contain"
+                />
+
+                <div className="flex flex-col justify-center leading-tight">
+                  <div className="text-[25px] font-extrabold leading-none">
+                    <span className="text-blue-600">BPP</span>
+                    <span className="text-orange-500">MHKP</span>
+                  </div>
+                  <div
+                    className="text-[14px] font-typewriter font-semibold 
+                 text-gray-500 dark:text-gray-300 tracking-wide mt-[2px] leading-none"
+                  >
+                    Report
+                  </div>
                 </div>
               </div>
             </>
@@ -347,8 +370,8 @@ const AppSidebar: React.FC = () => {
             <Image
               src={logo}
               alt="Logo BPPMHKP"
-              width={35}
-              height={35}
+              width={40}
+              height={40}
               priority
             />
           )}

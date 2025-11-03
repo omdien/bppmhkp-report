@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { TrenBulananSKP } from "@/services/DashboardServices";
+import dynamic from "next/dynamic";
 
 interface Props {
   data: TrenBulananSKP[];
@@ -12,18 +13,20 @@ const TrenBulananSKPChart: React.FC<Props> = ({ data }) => {
 
   // Deteksi dark mode Tailwind secara otomatis
   useEffect(() => {
-    const checkTheme = () => {
+    // Jalankan hanya di browser
+    if (typeof document !== "undefined") {
       setIsDark(document.documentElement.classList.contains("dark"));
-    };
-    checkTheme();
 
-    // observer utk realtime perubahan dark/light mode
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => observer.disconnect();
+      const observer = new MutationObserver(() => {
+        setIsDark(document.documentElement.classList.contains("dark"));
+      });
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+
+      return () => observer.disconnect();
+    }
   }, []);
 
   const categories = data.map((item) => item.bulan);
@@ -92,19 +95,16 @@ const TrenBulananSKPChart: React.FC<Props> = ({ data }) => {
 
   return (
     <div
-      className={`rounded-lg border ${
-        isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
-      } shadow-md transition-all duration-300`}
+      className={`rounded-lg border ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
+        } shadow-md transition-all duration-300`}
     >
       <div
-        className={`px-4 py-3 border-b ${
-          isDark ? "border-gray-700 bg-gray-800" : "border-gray-100 bg-gray-50"
-        }`}
+        className={`px-4 py-3 border-b ${isDark ? "border-gray-700 bg-gray-800" : "border-gray-100 bg-gray-50"
+          }`}
       >
         <h2
-          className={`text-lg font-semibold ${
-            isDark ? "text-gray-100" : "text-gray-800"
-          }`}
+          className={`text-lg font-semibold ${isDark ? "text-gray-100" : "text-gray-800"
+            }`}
         >
           📈 Tren Penerbitan SKP
         </h2>
@@ -123,4 +123,7 @@ const TrenBulananSKPChart: React.FC<Props> = ({ data }) => {
   );
 };
 
-export default TrenBulananSKPChart;
+// export default TrenBulananSKPChart;
+export default dynamic(() => Promise.resolve(TrenBulananSKPChart), {
+  ssr: false,
+});

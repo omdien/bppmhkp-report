@@ -7,12 +7,13 @@ import ReportService, {
 import DashboardService, {
   ResumeSKPResponse,
   KomposisiPeringkatSKP,
-  TopUPISKP, TopProvinsiSKP,
+  // TopUPISKP, 
+  // TopProvinsiSKP,
   KomposisiPermohonanSKP,
   DistribusiSkalaUsahaSKP,
   TrenBulananSKP,
   KomposisiOlahanSKP,
-  TopKabupatenSKP
+  // TopKabupatenSKP
 } from "@/services/DashboardServices";
 import ResumeCard from "./ResumeCard";
 import TrenBulananSKPChart from "./TrenBulananSKPChart";
@@ -21,6 +22,8 @@ import KomposisiPeringkatSKPChart from "./KomposisiPeringkatSKPChart";
 import KomposisiPermohonanSKPChart from "./KomposisiPermohonanSKPChart";
 import DistribusiSkalaUsahaChart from "./DistribusiSkalaUsahaChart";
 import KomposisiOlahanSKPChart from "./KomposisiOlahanSKPChart";
+import ChartBox from "./ChartBox";
+import ComponentCard from "@/components/common/ComponentCard";
 
 export const DashboardSKP = () => {
   const { periode } = usePeriode();
@@ -32,12 +35,12 @@ export const DashboardSKP = () => {
   const [resumeSKP, setResumeSKP] = useState<ResumeSKPResponse | null>(null);
   const [trenBulananSKP, setTrenBulananSKP] = useState<TrenBulananSKP[]>([]);
   const [komposisiPeringkatSKP, setKomposisiPeringkatSKP] = useState<KomposisiPeringkatSKP[]>([]);
-  const [topUPISKP, setTopUPISKP] = useState<TopUPISKP[]>([]);
-  const [topProvinsiSKP, setTopProvinsiSKP] = useState<TopProvinsiSKP[]>([]);
+  // const [topUPISKP, setTopUPISKP] = useState<TopUPISKP[]>([]);
+  // const [topProvinsiSKP, setTopProvinsiSKP] = useState<TopProvinsiSKP[]>([]);
   const [komposisiPermohonanSKP, setKomposisiPermohonanSKP] = useState<KomposisiPermohonanSKP[]>([]);
   const [distribusiSkalaUsahaSKP, setDistribusiSkalaUsahaSKP] = useState<DistribusiSkalaUsahaSKP[]>([]);
   const [komposisiOlahanSKP, setKomposisiOlahanSKP] = useState<KomposisiOlahanSKP[]>([]);
-  const [topKabupatenSKP, setTopKabupatenSKP] = useState<TopKabupatenSKP[]>([]);
+  // const [topKabupatenSKP, setTopKabupatenSKP] = useState<TopKabupatenSKP[]>([]);
 
   // --- Fetch Resume SKP --- 
   const fetchResumeSKP = async (startDate?: string, endDate?: string) => {
@@ -72,25 +75,25 @@ export const DashboardSKP = () => {
   };
 
   // --- Fetch Top UPI SKP --- 
-  const fetchTopUPISKP = async (startDate?: string, endDate?: string) => {
-    try {
-      const result = await DashboardService.getTopUPISKP(startDate, endDate);
-      setTopUPISKP(result);
-    } catch (err) {
-      console.error("❌ Gagal fetch top UPI SKP:", err); setTopUPISKP([]);
-    }
-  };
+  // const fetchTopUPISKP = async (startDate?: string, endDate?: string) => {
+  //   try {
+  //     const result = await DashboardService.getTopUPISKP(startDate, endDate);
+  //     setTopUPISKP(result);
+  //   } catch (err) {
+  //     console.error("❌ Gagal fetch top UPI SKP:", err); setTopUPISKP([]);
+  //   }
+  // };
 
   // --- Fetch Top Provinsi SKP --- 
-  const fetchTopProvinsiSKP = async (startDate?: string, endDate?: string) => {
-    try {
-      const result = await DashboardService.getTopProvinsiSKP(startDate, endDate);
-      setTopProvinsiSKP(result);
-    } catch (err) {
-      console.error("❌ Gagal fetch top provinsi SKP:", err);
-      setTopProvinsiSKP([]);
-    }
-  };
+  // const fetchTopProvinsiSKP = async (startDate?: string, endDate?: string) => {
+  //   try {
+  //     const result = await DashboardService.getTopProvinsiSKP(startDate, endDate);
+  //     setTopProvinsiSKP(result);
+  //   } catch (err) {
+  //     console.error("❌ Gagal fetch top provinsi SKP:", err);
+  //     setTopProvinsiSKP([]);
+  //   }
+  // };
   // --- Fetch Komposisi Permohonan SKP --- 
   const fetchKomposisiPermohonanSKP = async (startDate?: string, endDate?: string) => {
     try {
@@ -124,15 +127,15 @@ export const DashboardSKP = () => {
   };
 
   // --- Fetch Top Kabupaten SKP --- 
-  const fetchTopKabupatenSKP = async (startDate?: string, endDate?: string) => {
-    try {
-      const result = await DashboardService.getTopKabupatenSKP(startDate, endDate);
-      setTopKabupatenSKP(result);
-    } catch (err) {
-      console.error("❌ Gagal fetch top kabupaten SKP:", err);
-      setTopKabupatenSKP([]);
-    }
-  };
+  // const fetchTopKabupatenSKP = async (startDate?: string, endDate?: string) => {
+  //   try {
+  //     const result = await DashboardService.getTopKabupatenSKP(startDate, endDate);
+  //     setTopKabupatenSKP(result);
+  //   } catch (err) {
+  //     console.error("❌ Gagal fetch top kabupaten SKP:", err);
+  //     setTopKabupatenSKP([]);
+  //   }
+  // };
 
   // --- Fetch Rekap ---
   const fetchRekapSKP = async (
@@ -161,12 +164,12 @@ export const DashboardSKP = () => {
     fetchResumeSKP(periode.startDate, periode.endDate);
     fetchTrenBulananSKP(periode.startDate, periode.endDate);
     fetchKomposisiPeringkatSKP(periode.startDate, periode.endDate);
-    fetchTopUPISKP(periode.startDate, periode.endDate);
-    fetchTopProvinsiSKP(periode.startDate, periode.endDate);
+    // fetchTopUPISKP(periode.startDate, periode.endDate);
+    // fetchTopProvinsiSKP(periode.startDate, periode.endDate);
     fetchKomposisiPermohonanSKP(periode.startDate, periode.endDate);
     fetchDistribusiSkalaUsahaSKP(periode.startDate, periode.endDate);
     fetchKomposisiOlahanSKP(periode.startDate, periode.endDate);
-    fetchTopKabupatenSKP(periode.startDate, periode.endDate);
+    // fetchTopKabupatenSKP(periode.startDate, periode.endDate);
     fetchRekapSKP(periode.startDate, periode.endDate, 100);
   }, [user, periode.startDate, periode.endDate]);
 
@@ -181,26 +184,24 @@ export const DashboardSKP = () => {
         {/* Tren Bulanan */}
         <TrenBulananSKPChart data={trenBulananSKP} />
       </div>
-      <div className="col-span-3 space-y-6">
-        {/* Komposisi Peringkat */}
-        <KomposisiPeringkatSKPChart data={komposisiPeringkatSKP} />
-      </div>
-      <div className="col-span-3 space-y-6">
-        {/* Komposisi Permohonan */}
-        <KomposisiPermohonanSKPChart data={komposisiPermohonanSKP} />
-      </div>
-      <div className="col-span-3 space-y-6">
-        {/* Distribusi Skala Usaha */}
-        <DistribusiSkalaUsahaChart data={distribusiSkalaUsahaSKP} />
-      </div>
-      <div className="col-span-3 space-y-6">
-        {/* Komposisi Olahan */}
-        <KomposisiOlahanSKPChart data={komposisiOlahanSKP} />
+      <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <ChartBox title="📊 Komposisi Peringkat SKP">
+          <KomposisiPeringkatSKPChart data={komposisiPeringkatSKP} />
+        </ChartBox>
+        <ChartBox title="📊 Komposisi Permohonan SKP">
+          <KomposisiPermohonanSKPChart data={komposisiPermohonanSKP} />
+        </ChartBox>
+        <ChartBox title="📊 Distribusi Skala Usaha SKP">
+          <DistribusiSkalaUsahaChart data={distribusiSkalaUsahaSKP} />
+        </ChartBox>
+        <ChartBox title="📊 Komposisi Jenis Olahan SKP">
+          <KomposisiOlahanSKPChart data={komposisiOlahanSKP} />
+        </ChartBox>
       </div>
       <div className="col-span-12 space-y-6 xl:col-span-12">
-        {/* <ComponentCard title="Dashboard SKP"> */}
-        <TabelSKP data={rekapProvinsi} />
-        {/* </ComponentCard> */}
+        <ComponentCard title="Rincian Sertifikasi Kelayakan per Provinsi">
+          <TabelSKP data={rekapProvinsi} />
+        </ComponentCard>
       </div>
     </div>
   );

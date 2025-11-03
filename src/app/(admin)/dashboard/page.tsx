@@ -1,9 +1,20 @@
 "use client";
 
 import { useState } from "react";
+
+import dynamic from "next/dynamic";
+
 import { DashboardEkspor } from "@/components/dashboard/ekspor/DashboardEkspor";
 import { DashboardPrimer} from "@/components/dashboard/primer/DahsboardPrimer";
-import { DashboardSKP } from "@/components/dashboard/skp/DashboardSKP";
+// import { DashboardSKP } from "@/components/dashboard/skp/DashboardSKP";
+const DashboardSKP = dynamic(
+  () => import("@/components/dashboard/skp/DashboardSKP"),
+  { ssr: false } // ⛔ hindari eksekusi di server
+);
+
+// const DashboardEkspor = dynamic(() => import("@/components/dashboard/ekspor/DashboardEkspor"), { ssr: false });
+// const DashboardPrimer = dynamic(() => import("@/components/dashboard/primer/DahsboardPrimer"), { ssr: false });
+// const DashboardSKP = dynamic(() => import("@/components/dashboard/skp/DashboardSKP"), { ssr: false });
 
 export default function ReportingDashboard() {
   const [activeTab, setActiveTab] = useState("smkhp");
@@ -13,9 +24,10 @@ export default function ReportingDashboard() {
       {/* Tabs Navigation */}
       <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4">
         {[
-          { id: "smkhp", label: "SMKHP" },
           { id: "primer", label: "Primer" },
           { id: "skp", label: "SKP" },
+          { id: "smkhp", label: "SMKHP" }
+          
         ].map((tab) => (
           <button
             key={tab.id}
@@ -31,13 +43,6 @@ export default function ReportingDashboard() {
       </div>
 
       {/* Tabs Content */}
-      {activeTab === "smkhp" && (
-        <div className="grid grid-cols-12 gap-4 md:gap-6">
-          <div className="col-span-12 space-y-6 xl:col-span-12">
-            <DashboardEkspor />
-          </div>
-        </div>
-      )}
 
       {activeTab === "primer" && (
         <div className="grid grid-cols-12 gap-4 md:gap-6">
@@ -54,6 +59,15 @@ export default function ReportingDashboard() {
           </div>
         </div>
       )}
+
+      {activeTab === "smkhp" && (
+        <div className="grid grid-cols-12 gap-4 md:gap-6">
+          <div className="col-span-12 space-y-6 xl:col-span-12">
+            <DashboardEkspor />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
