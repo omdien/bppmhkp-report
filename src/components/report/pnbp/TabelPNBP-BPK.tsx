@@ -39,7 +39,9 @@ const columns: Column<ILaporanPNBPItem>[] = [
     label: "VOLUME",
     align: "right",
     formatter: (v) =>
-      typeof v === "string" ? Number(v).toLocaleString("id-ID") : "-",
+      v !== null && v !== undefined
+        ? Number(v).toLocaleString("id-ID")
+        : "-",
   },
 
   { key: "satuan", label: "SATUAN" },
@@ -49,7 +51,9 @@ const columns: Column<ILaporanPNBPItem>[] = [
     label: "TARIF",
     align: "right",
     formatter: (v) =>
-      typeof v === "string" ? Number(v).toLocaleString("id-ID") : "-",
+      v !== null && v !== undefined
+        ? Number(v).toLocaleString("id-ID")
+        : "-",
   },
 
   {
@@ -57,7 +61,9 @@ const columns: Column<ILaporanPNBPItem>[] = [
     label: "TOTAL",
     align: "right",
     formatter: (v) =>
-      typeof v === "string" ? Number(v).toLocaleString("id-ID") : "-",
+      v !== null && v !== undefined
+        ? Number(v).toLocaleString("id-ID")
+        : "-",
   },
 
   { key: "pp", label: "PP" },
@@ -104,11 +110,10 @@ export default function TabelPNBPBPK({ data, page, limit }: Props) {
               data.map((row, idx) => (
                 <TableRow
                   key={idx}
-                  className={`${
-                    idx % 2 === 0
-                      ? "bg-white dark:bg-gray-900"
-                      : "bg-gray-50 dark:bg-gray-800"
-                  } hover:bg-blue-50 dark:hover:bg-gray-700`}
+                  className={`${idx % 2 === 0
+                    ? "bg-white dark:bg-gray-900"
+                    : "bg-gray-50 dark:bg-gray-800"
+                    } hover:bg-blue-50 dark:hover:bg-gray-700`}
                 >
                   <TableCell className={cellClass}>
                     {(page - 1) * limit + idx + 1}

@@ -49,7 +49,6 @@ export default function ReportingPNBP() {
     }
   };
 
-  // Export Excel tetap pakai endpoint lama
   // Export Excel baru
   const handleExportExcel = async () => {
     if (!periode.startDate || !periode.endDate) return;
