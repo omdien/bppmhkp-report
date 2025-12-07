@@ -182,6 +182,37 @@ export type PaginatedResponse<T> = {
   totalRecords: number;
 };
 
+export interface ILaporanPNBPItem {
+  nomor_aju: string;
+  nm_pendek: string;
+  nm_pengirim: string;
+  ekspor: string;
+  uraian_negara: string;
+  no_pnbp: string;
+  tgl_pnbp: string;
+  kd_tarif: string;
+  nm_tarif: string;
+  volume: string;
+  satuan: string;
+  tarif: string;
+  total_tarif: string;
+  pp: string;
+}
+
+export interface IPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface ILaporanPNBPResponse {
+  success: boolean;
+  message: string;
+  data: ILaporanPNBPItem[];
+  pagination: IPagination;
+}
+
 // ----- Service Class -----
 export default class ReportService {
   /**
@@ -485,6 +516,70 @@ export default class ReportService {
     }
 
     return res.blob();
+  }
+
+  /**
+   * Ambil data report PNBP (flat join)
+   * backend route: GET /lap-pnbp/laporan-pnbp
+   */
+  static async getLaporanPNBP(
+    startDate: string,
+    endDate: string,
+    page: number = 1,
+    limit: number = 20,
+    negara?: string,
+    kd_tarif?: string
+  ): Promise<ILaporanPNBPResponse> {
+
+    const params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (negara) params.append("negara", negara);
+    if (kd_tarif) params.append("kd_tarif", kd_tarif);
+
+    // pagination
+    params.append("page", page.toString());
+    params.append("limit", limit.toString());
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/lap-pnbp/laporan-pnbp?${params.toString()}`;
+
+    const res = await fetch(url, { credentials: "include" });
+
+    if (!res.ok) {
+      throw new Error(`Gagal mengambil data PNBP: ${res.status} ${res.statusText}`);
+    }
+
+    return res.json();
+  }
+
+  // --- EXPORT EXCEL PNBP (baruuuu) ---
+  static async exportLaporanPNBP(
+    startDate: string,
+    endDate: string,
+    negara?: string,
+    kd_tarif?: string
+  ): Promise<Blob> {
+
+    const params = new URLSearchParams();
+
+    params.append("startDate", startDate);
+    params.append("endDate", endDate);
+
+    if (negara) params.append("negara", negara);
+    if (kd_tarif) params.append("kd_tarif", kd_tarif);
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/lap-pnbp/export-excel?${params.toString()}`;
+
+    const res = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
+    }
+
+    return await res.blob();
   }
 
 }

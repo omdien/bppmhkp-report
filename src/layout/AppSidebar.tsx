@@ -65,10 +65,15 @@ const navItems: NavItem[] = [
       { name: "SMKHP", path: "/report/smkhp", pro: false },
     ],
   },
+  // {
+  //   icon: <PnbpIcon />,
+  //   name: "PNBP",
+  //   path: "/pnbp",   // langsung ke halaman dashboard
+  // },
   {
     icon: <PnbpIcon />,
-    name: "PNBP",
-    path: "/pnbp",   // langsung ke halaman dashboard
+    name: "Laporan PNBP",
+    path: "/lap-pnbp",   // langsung ke halaman dashboard
   },
 ];
 
