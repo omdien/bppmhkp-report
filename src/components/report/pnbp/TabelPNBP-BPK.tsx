@@ -19,8 +19,8 @@ type Column<T> = {
 const columns: Column<ILaporanPNBPItem>[] = [
   { key: "nomor_aju", label: "NO AJU" },
   { key: "nm_pendek", label: "NAMA UPT" },
-  { key: "nm_pengirim", label: "PENGIRIM" },
-  { key: "ekspor", label: "EKSPOR" },
+  { key: "nm_pengirim", label: "PELAKU USAHA" },
+  { key: "ekspor", label: "KEGIATAN" },
   { key: "uraian_negara", label: "NEGARA" },
   { key: "no_pnbp", label: "NO PNBP" },
 
