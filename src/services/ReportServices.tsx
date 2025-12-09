@@ -150,7 +150,10 @@ export interface CBIBKapal {
   alamat: string;
   gt: number;
   tipe_kapal: string;
-  tgl_inspeksi: string;
+  tgl_permohonan: string;
+  tgl_spt: string;
+  tgl_awal_inspeksi: string;
+  tgl_akhir_inspeksi: string;
   tgl_laporan: string | null;
   jenis_produk: string;
   grade_scpib: string;
@@ -158,7 +161,9 @@ export interface CBIBKapal {
   tgl_kadaluarsa: string;
   upt_inspeksi: string;
   nama_pelabuhan: string;
+  kode_provinsi: string;
   nama_provinsi: string;
+  status_pemasok: string;
   nama_pemilik: string;
   telepon: string;
   nahkoda_kapal: string;
@@ -172,7 +177,6 @@ export interface CBIBKapal {
   tgl_skkp_bkp_nk: string;
   pj_pusat: string;
 }
-
 
 // ----- Generic response type -----
 export type PaginatedResponse<T> = {

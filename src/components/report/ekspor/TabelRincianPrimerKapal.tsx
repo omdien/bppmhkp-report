@@ -25,8 +25,13 @@ const columns: Column<CBIBKapal>[] = [
     { key: "gt", label: "GT", align: "right" },
     { key: "tipe_kapal", label: "TIPE KAPAL" },
     {
-        key: "tgl_inspeksi",
-        label: "TGL INSPEKSI",
+        key: "tgl_awal_inspeksi",
+        label: "TGL AWAL INSPEKSI",
+        formatter: (v) => v ? new Date(v as string).toLocaleDateString("id-ID") : "-"
+    },
+    {
+        key: "tgl_akhir_inspeksi",
+        label: "TGL AKHIR INSPEKSI",
         formatter: (v) => v ? new Date(v as string).toLocaleDateString("id-ID") : "-"
     },
     {
