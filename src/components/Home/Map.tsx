@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import indonesiaGeoJson from "@/constant/38-Provinsi-Indonesia.json";
 // import PublicService, { PropinsiIzinPivot } from "@/services/PublicService";
 import ReportService, {
-    PropinsiIzinPivot,
+  PropinsiIzinPivot,
 } from "@/services/ReportServices";
 import "leaflet/dist/leaflet.css";
 
@@ -107,33 +107,54 @@ export default function MapIndonesiaLeaflet() {
     const { PROVINSI, _pivot } = feature.properties ?? {};
     const pivot: PropinsiIzinPivot | null = _pivot ?? null;
 
-    const CPPIB = pivot?.CPPIB ?? 0;
-    const CPIB = pivot?.CPIB ?? 0;
-    const CPOIB = pivot?.CPOIB ?? 0;
-    const CDOIB = pivot?.CDOIB ?? 0;
-    const CBIB = pivot?.CBIB ?? 0;
-    const CBIB_KAPAL = pivot?.CBIB_Kapal ?? 0;
+    // Nilai default 0 jika data null/undefined
+    const data = {
+      CPIB: pivot?.CPIB ?? 0,
+      CBIB: pivot?.CBIB ?? 0,
+      CPPIB: pivot?.CPPIB ?? 0,
+      CPOIB: pivot?.CPOIB ?? 0,
+      "CPIB KAPAL": pivot?.CBIB_Kapal ?? 0,
+      CDOIB: pivot?.CDOIB ?? 0,
+    };
 
     const popupContent = `
-    <div>
-      <strong>SERTIFIKASI BPPMHKP</strong><br/>
-      <strong>Tahun 2025</strong><br/>
-      <strong>Provinsi: ${PROVINSI ?? "-"}</strong><br/>
-      CPIB: ${CPIB}<br/>
-      CBIB: ${CBIB}
-      CPPIB: ${CPPIB}<br/>
-      CPOIB: ${CPOIB}<br/>
-      CPIB KAPAL: ${CBIB_KAPAL}<br/>
-      CDOIB: ${CDOIB}<br/>
+    <div style="font-family: 'Inter', sans-serif; min-width: 200px; padding: 5px;">
+      <div style="display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 10px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Logo_Kementerian_Kelautan_dan_Perikanan.png/1200px-Logo_Kementerian_Kelautan_dan_Perikanan.png" 
+             alt="Logo" style="width: 30px; height: auto;" />
+        <div>
+          <span style="font-size: 12px; color: #64748b;">Propinsi :</span><br/>
+          <strong style="font-size: 16px; color: #0f172a;">${PROVINSI ?? "-"}</strong>
+        </div>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        ${Object.entries(data)
+        .map(
+          ([label, value]) => `
+          <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 4px 0; color: #475569;">${label}</td>
+            <td style="padding: 4px 0; text-align: right; font-weight: bold; color: #2563eb;">${value}</td>
+          </tr>
+        `
+        )
+        .join("")}
+      </table>
+      
+      <div style="margin-top: 10px; font-size: 11px; text-align: center; color: #94a3b8; font-style: italic;">
+        Data diperbarui secara real-time
+      </div>
     </div>
   `;
 
-    layer.bindPopup(popupContent);
+    layer.bindPopup(popupContent, {
+      maxWidth: 300,
+      className: "custom-leaflet-popup", // Kita bisa tambahkan styling di global CSS
+    });
 
-    // ✅ Narrowing jadi Path
+    // Event Mouseover/Mouseout tetap sama
     layer.on("mouseover", () => {
       (layer as L.Path).setStyle({
-        fillColor: "orange",
+        fillColor: "#3b82f6",
         fillOpacity: 0.8,
       });
     });
@@ -142,7 +163,6 @@ export default function MapIndonesiaLeaflet() {
       (layer as L.Path).setStyle(geoJsonStyle);
     });
   };
-
 
   return (
     <div className="relative w-full h-screen flex justify-center flex-col bg-slate-100">
