@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import indonesiaGeoJson from "@/constant/38-Provinsi-Indonesia.json";
-import PublicService, { PropinsiIzinPivot } from "@/services/PublicService";
+// import PublicService, { PropinsiIzinPivot } from "@/services/PublicService";
+import ReportService, {
+    PropinsiIzinPivot,
+} from "@/services/ReportServices";
 import "leaflet/dist/leaflet.css";
 
 import type {
@@ -49,10 +52,8 @@ export default function MapIndonesiaLeaflet() {
 
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
     try {
-      const result = await PublicService.getPublicPropinsiIzin(
-        startDate,
-        endDate
-      );
+      const result = await ReportService.getPropinsiIzin(startDate, endDate);
+      console.log("✅ Berhasil fetch propinsi pivot:", result);
       setPropinsiData(result);
     } catch (err) {
       console.error("Gagal fetch propinsi pivot:", err);
@@ -111,17 +112,19 @@ export default function MapIndonesiaLeaflet() {
     const CPOIB = pivot?.CPOIB ?? 0;
     const CDOIB = pivot?.CDOIB ?? 0;
     const CBIB = pivot?.CBIB ?? 0;
+    const CBIB_KAPAL = pivot?.CBIB_Kapal ?? 0;
 
     const popupContent = `
     <div>
       <strong>SERTIFIKASI BPPMHKP</strong><br/>
       <strong>Tahun 2025</strong><br/>
       <strong>Provinsi: ${PROVINSI ?? "-"}</strong><br/>
-      CPPIB: ${CPPIB}<br/>
       CPIB: ${CPIB}<br/>
-      CPOIB: ${CPOIB}<br/>
-      CDOIB: ${CDOIB}<br/>
       CBIB: ${CBIB}
+      CPPIB: ${CPPIB}<br/>
+      CPOIB: ${CPOIB}<br/>
+      CPIB KAPAL: ${CBIB_KAPAL}<br/>
+      CDOIB: ${CDOIB}<br/>
     </div>
   `;
 
