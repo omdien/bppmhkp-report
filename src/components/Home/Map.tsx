@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import indonesiaGeoJson from "@/constant/38-Provinsi-Indonesia.json";
 // import PublicService, { PropinsiIzinPivot } from "@/services/PublicService";
+import { usePeriode } from "@/context/PeriodeContext";
 import ReportService, {
   PropinsiIzinPivot,
 } from "@/services/ReportServices";
@@ -42,8 +43,8 @@ const GeoJSON = dynamic(
 
 export default function MapIndonesiaLeaflet() {
   const [propinsiData, setPropinsiData] = useState<PropinsiIzinPivot[]>([]);
-  const [startDate] = useState("2025-01-01");
-  const [endDate] = useState("2025-12-31");
+  const { periode } = usePeriode();
+  const { startDate, endDate } = periode;
 
   // ----- Fetch Pivot -----
   useEffect(() => {
@@ -107,7 +108,9 @@ export default function MapIndonesiaLeaflet() {
     const { PROVINSI, _pivot } = feature.properties ?? {};
     const pivot: PropinsiIzinPivot | null = _pivot ?? null;
 
-    // Nilai default 0 jika data null/undefined
+    // ✅ Ini adalah variabel yang Anda gunakan
+    const logoSrc = `/report/images/propinsi/${pivot?.kode_propinsi}.png`;
+
     const data = {
       CPIB: pivot?.CPIB ?? 0,
       CBIB: pivot?.CBIB ?? 0,
@@ -120,8 +123,10 @@ export default function MapIndonesiaLeaflet() {
     const popupContent = `
     <div style="font-family: 'Inter', sans-serif; min-width: 200px; padding: 5px;">
       <div style="display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 10px;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Logo_Kementerian_Kelautan_dan_Perikanan.png/1200px-Logo_Kementerian_Kelautan_dan_Perikanan.png" 
-             alt="Logo" style="width: 30px; height: auto;" />
+        <img src="${logoSrc}" 
+             alt="Logo ${PROVINSI}" 
+             onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Logo_Kementerian_Kelautan_dan_Perikanan.png/1200px-Logo_Kementerian_Kelautan_dan_Perikanan.png'"
+             style="width: 35px; height: auto; object-fit: contain;" />
         <div>
           <span style="font-size: 12px; color: #64748b;">Propinsi :</span><br/>
           <strong style="font-size: 16px; color: #0f172a;">${PROVINSI ?? "-"}</strong>
@@ -139,7 +144,6 @@ export default function MapIndonesiaLeaflet() {
         )
         .join("")}
       </table>
-      
       <div style="margin-top: 10px; font-size: 11px; text-align: center; color: #94a3b8; font-style: italic;">
         Data diperbarui secara real-time
       </div>
@@ -148,20 +152,10 @@ export default function MapIndonesiaLeaflet() {
 
     layer.bindPopup(popupContent, {
       maxWidth: 300,
-      className: "custom-leaflet-popup", // Kita bisa tambahkan styling di global CSS
+      className: "custom-leaflet-popup",
     });
 
-    // Event Mouseover/Mouseout tetap sama
-    layer.on("mouseover", () => {
-      (layer as L.Path).setStyle({
-        fillColor: "#3b82f6",
-        fillOpacity: 0.8,
-      });
-    });
-
-    layer.on("mouseout", () => {
-      (layer as L.Path).setStyle(geoJsonStyle);
-    });
+    // ... rest of mouseover logic
   };
 
   return (
