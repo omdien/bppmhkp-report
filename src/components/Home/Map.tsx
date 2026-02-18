@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import indonesiaGeoJson from "@/constant/38-Provinsi-Indonesia.json";
-// import PublicService, { PropinsiIzinPivot } from "@/services/PublicService";
 import { usePeriode } from "@/context/PeriodeContext";
 import ReportService, {
   PropinsiIzinPivot,
@@ -18,7 +17,7 @@ import type {
 } from "geojson";
 import type { Layer } from "leaflet";
 
-// ✅ bikin type untuk properties yang sudah ditambahin pivot
+// ✅ Type properties GeoJSON
 type ProvinceProperties = GeoJsonProperties & {
   PROVINSI?: string;
   KODE_PROV?: string | number;
@@ -27,7 +26,7 @@ type ProvinceProperties = GeoJsonProperties & {
   _pivot?: PropinsiIzinPivot | null;
 };
 
-// ⬅️ dynamic import react-leaflet supaya aman di Next.js
+// ⬅️ Dynamic import components
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
@@ -43,7 +42,7 @@ const GeoJSON = dynamic(
 
 export default function MapIndonesiaLeaflet() {
   const [propinsiData, setPropinsiData] = useState<PropinsiIzinPivot[]>([]);
-  const { periode } = usePeriode();
+  const { periode, setPeriode } = usePeriode();
   const { startDate, endDate } = periode;
 
   // ----- Fetch Pivot -----
@@ -54,14 +53,22 @@ export default function MapIndonesiaLeaflet() {
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
     try {
       const result = await ReportService.getPropinsiIzin(startDate, endDate);
-      console.log("✅ Berhasil fetch propinsi pivot:", result);
       setPropinsiData(result);
     } catch (err) {
       console.error("Gagal fetch propinsi pivot:", err);
     }
   };
 
-  // ----- quick lookup map (key = numeric kode propinsi) -----
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const year = e.target.value;
+    // Set periode ke awal tahun dan akhir tahun yang dipilih
+    setPeriode({
+      startDate: `${year}-01-01`,
+      endDate: `${year}-12-31`,
+    });
+  };
+
+  // ----- Quick lookup map -----
   const pivotMap = useMemo(() => {
     const m = new Map<number, PropinsiIzinPivot>();
     propinsiData.forEach((p) => {
@@ -71,7 +78,7 @@ export default function MapIndonesiaLeaflet() {
     return m;
   }, [propinsiData]);
 
-  // ----- merge pivot into geojson -----
+  // ----- Merge Pivot ke GeoJSON -----
   const mergedGeoJson: FeatureCollection<Geometry, ProvinceProperties> =
     useMemo(() => {
       const data: FeatureCollection<Geometry, ProvinceProperties> = JSON.parse(
@@ -95,10 +102,10 @@ export default function MapIndonesiaLeaflet() {
     }, [pivotMap]);
 
   const geoJsonStyle = {
-    color: "blue",
+    color: "#2563eb",
     weight: 1,
-    fillColor: "lightblue",
-    fillOpacity: 0.6,
+    fillColor: "#93c5fd",
+    fillOpacity: 0.5,
   };
 
   const onEachProvince = (
@@ -107,8 +114,6 @@ export default function MapIndonesiaLeaflet() {
   ) => {
     const { PROVINSI, _pivot } = feature.properties ?? {};
     const pivot: PropinsiIzinPivot | null = _pivot ?? null;
-
-    // ✅ Ini adalah variabel yang Anda gunakan
     const logoSrc = `/report/images/propinsi/${pivot?.kode_propinsi}.png`;
 
     const data = {
@@ -128,52 +133,81 @@ export default function MapIndonesiaLeaflet() {
              onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Logo_Kementerian_Kelautan_dan_Perikanan.png/1200px-Logo_Kementerian_Kelautan_dan_Perikanan.png'"
              style="width: 35px; height: auto; object-fit: contain;" />
         <div>
-          <span style="font-size: 12px; color: #64748b;">Propinsi :</span><br/>
-          <strong style="font-size: 16px; color: #0f172a;">${PROVINSI ?? "-"}</strong>
+          <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Provinsi</span><br/>
+          <strong style="font-size: 15px; color: #0f172a;">${PROVINSI ?? "-"}</strong>
         </div>
       </div>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
         ${Object.entries(data)
-        .map(
-          ([label, value]) => `
+        .map(([label, value]) => `
           <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 4px 0; color: #475569;">${label}</td>
-            <td style="padding: 4px 0; text-align: right; font-weight: bold; color: #2563eb;">${value}</td>
-          </tr>
-        `
-        )
-        .join("")}
+            <td style="padding: 5px 0; color: #475569;">${label}</td>
+            <td style="padding: 5px 0; text-align: right; font-weight: bold; color: #2563eb;">${value}</td>
+          </tr>`).join("")}
       </table>
-      <div style="margin-top: 10px; font-size: 11px; text-align: center; color: #94a3b8; font-style: italic;">
-        Data diperbarui secara real-time
-      </div>
-    </div>
-  `;
+    </div>`;
 
-    layer.bindPopup(popupContent, {
-      maxWidth: 300,
-      className: "custom-leaflet-popup",
-    });
-
-    // ... rest of mouseover logic
+    layer.bindPopup(popupContent, { maxWidth: 300 });
   };
 
   return (
-    <div className="relative w-full h-screen flex justify-center flex-col bg-slate-100">
-      <MapContainer
-        center={[-2, 118]}
-        zoom={5}
-        style={{ height: "600px", width: "100%" }}
-        attributionControl={false}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <GeoJSON
-          data={mergedGeoJson}
-          style={() => geoJsonStyle}
-          onEachFeature={onEachProvince}
-          key={JSON.stringify(propinsiData.map((p) => p.kode_propinsi))}
-        />
-      </MapContainer>
+    <div className="relative w-full h-screen flex flex-col bg-slate-50 overflow-hidden">
+
+      {/* 🟢 OVERLAY JUDUL & FILTER - GLASSMORPHISM UI */}
+      <div className="absolute top-[14vh] left-0 right-0 z-[1000] flex flex-col items-center pointer-events-none px-4">
+        <div className="bg-white/70 backdrop-blur-md px-6 py-4 rounded-2xl shadow-xl shadow-blue-900/10 border border-white/50 flex flex-col md:flex-row items-center gap-4 pointer-events-auto transition-all duration-500 hover:bg-white/80">
+
+          {/* Bagian Judul */}
+          <div className="flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-6">
+            <div className="w-1.5 h-8 bg-blue-600 rounded-full hidden md:block"></div>
+            <h1 className="text-sm md:text-base lg:text-lg font-extrabold text-slate-800 uppercase tracking-tight leading-tight text-center md:text-left">
+              Peta Sebaran Penerbitan Sertifikasi Mutu <br className="hidden md:block" />
+              <span className="text-blue-600">BPPMHKP</span>
+            </h1>
+          </div>
+
+          {/* Bagian Dropdown */}
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pilih Tahun</span>
+            <div className="relative">
+              <select
+                className="appearance-none bg-blue-50 border border-blue-100 text-blue-700 font-bold rounded-xl pl-4 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer shadow-sm transition-all"
+                value={startDate.split('-')[0]} // Ambil tahun dari string "YYYY-MM-DD"
+                onChange={handleYearChange} // Fungsi handler yang baru
+              >
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+              </select>
+              <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 🔵 MAP CONTAINER */}
+      <div className="flex-grow w-full h-full pt-[12vh]">
+        <MapContainer
+          center={[-2, 118]}
+          zoom={5}
+          style={{ height: "100%", width: "100%" }}
+          attributionControl={false}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <GeoJSON
+            data={mergedGeoJson}
+            style={() => geoJsonStyle}
+            onEachFeature={onEachProvince}
+            key={JSON.stringify(propinsiData.map((p) => p.kode_propinsi))}
+          />
+        </MapContainer>
+      </div>
+
     </div>
   );
 }
