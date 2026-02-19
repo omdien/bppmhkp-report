@@ -59,12 +59,23 @@ const Nav = ({ openNav }: Props) => {
             height={40}
             priority
           />
-          <div>
+          {/* <div>
             <span className="text-blue-600">BPP</span>
             <span className="text-orange-500">MHKP</span>
+          </div> */}
+          <div className="flex flex-col justify-center leading-tight">
+            <div className="text-[25px] font-extrabold leading-none">
+              <span className="text-blue-600">BPP</span>
+              <span className="text-orange-500">MHKP</span>
+            </div>
+            <div
+              className="text-[14px] font-typewriter font-semibold 
+                 text-gray-500 dark:text-gray-300 tracking-wide mt-[2px] leading-none"
+            >
+              R  e  p  o  r  t
+            </div>
           </div>
         </div>
-
         {/* Navlinks */}
         <div className="hidden lg:flex items-center space-x-10">
           {navLinks.map((link) => (

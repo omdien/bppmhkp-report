@@ -162,7 +162,8 @@ export default function MapIndonesiaLeaflet() {
             <div className="w-1.5 h-8 bg-blue-600 rounded-full hidden md:block"></div>
             <h1 className="text-sm md:text-base lg:text-lg font-extrabold text-slate-800 uppercase tracking-tight leading-tight text-center md:text-left">
               Peta Sebaran Penerbitan Sertifikasi Mutu <br className="hidden md:block" />
-              <span className="text-blue-600">BPPMHKP</span>
+              <span className="text-blue-600">BPP</span>
+              <span className="text-orange-500">MHKP</span>
             </h1>
           </div>
 

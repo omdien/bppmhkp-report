@@ -63,9 +63,17 @@ const AppHeader: React.FC = () => {
           <Link href="/dashboard" className="lg:hidden">
             <div className="flex items-center space-x-2">
               <Image src={logo} alt="Logo BPPMHKP" width={40} height={40} priority />
-              <div className="text-2xl font-bold sm:text-3xl">
-                <span className="text-blue-600">BPP</span>
-                <span className="text-orange-500">MHKP</span>
+              <div className="flex flex-col justify-center leading-tight">
+                <div className="text-[25px] font-extrabold leading-none">
+                  <span className="text-blue-600">BPP</span>
+                  <span className="text-orange-500">MHKP</span>
+                </div>
+                <div
+                  className="text-[14px] font-typewriter font-semibold 
+                 text-gray-500 dark:text-gray-300 tracking-wide mt-[2px] leading-none"
+                >
+                  R  e  p  o  r  t
+                </div>
               </div>
             </div>
           </Link>

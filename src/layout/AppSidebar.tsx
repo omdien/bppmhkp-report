@@ -360,7 +360,7 @@ const AppSidebar: React.FC = () => {
                     className="text-[14px] font-typewriter font-semibold 
                  text-gray-500 dark:text-gray-300 tracking-wide mt-[2px] leading-none"
                   >
-                    Report
+                    R  e  p  o  r  t
                   </div>
                 </div>
               </div>
