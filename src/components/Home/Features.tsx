@@ -39,7 +39,7 @@ const Features = () => {
     },
     {
       id: 5,
-      title: "CBIB KAPAL",
+      title: "CPIB KAPAL",
       description: "Cara Penanganan Ikan yang Baik di Atas Kapal",
       icon: <FaShip className="w-12 h-12 text-orange-500 mx-auto" />,
     },

@@ -36,7 +36,7 @@ const columns: Column<PropinsiIzinPivot>[] = [
   { key: "CPPIB", label: "CPPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPIB", label: "CPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPOIB", label: "CPOIB", align: "right", width: "w-14", clickable: true },
-  { key: "CBIB_Kapal", label: "CBIB Kapal", align: "right", width: "w-16", clickable: true },
+  { key: "CBIB_Kapal", label: "CPIB Kapal", align: "right", width: "w-16", clickable: true },
   { key: "CDOIB", label: "CDOIB", align: "right", width: "w-14", clickable: true },
   { key: "CBIB", label: "CBIB", align: "right", width: "w-14", clickable: true },
   { key: "JUMLAH", label: "JUMLAH", align: "right", width: "w-16", clickable: true },

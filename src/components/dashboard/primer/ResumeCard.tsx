@@ -3,15 +3,15 @@
 import React from "react";
 import {
   FaSeedling, // CBIB
-  FaFish, // CPIB
+  FaFish, // CPIB & CPIB_KAPAL
   FaBox, // CPPIB
   FaPills, // CPOIB
-  FaShip, // CBIB_KAPAL
+  FaShip, // CPIB_KAPAL
   FaTruck, // CDOIB
   FaCertificate, // Total Izin
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { IconType } from "react-icons"; // ✅ tipe yang tepat untuk ikon React Icons
+import { IconType } from "react-icons";
 
 /* ------------------ Helpers ------------------ */
 const formatNumber = (value: number) =>
@@ -26,18 +26,18 @@ const warnaIzin: Record<
   CBIB: { from: "#FCD58A", to: "#E3A22A", darkFrom: "#E5B550", darkTo: "#B37A09" },
   CPPIB: { from: "#CF0F47", to: "#8A0B2E", darkFrom: "#A40F3A", darkTo: "#650721" },
   CPOIB: { from: "#00695C", to: "#003D33", darkFrom: "#005248", darkTo: "#002821" },
-  CBIB_KAPAL: { from: "#00ACC1", to: "#007C91", darkFrom: "#008FA3", darkTo: "#005C6B" },
+  CPIB_KAPAL: { from: "#00ACC1", to: "#007C91", darkFrom: "#008FA3", darkTo: "#005C6B" }, // Update key
   CDOIB: { from: "#4BA38A", to: "#2C6E5C", darkFrom: "#3D8570", darkTo: "#1E5142" },
   "Total Izin": { from: "#DC3C22", to: "#A32610", darkFrom: "#B72E15", darkTo: "#7A1A09" },
 };
 
 /* ------------------ Icon Mapping ------------------ */
 const iconMap: Record<string, IconType> = {
-  CPIB: FaFish,
-  CBIB: FaSeedling,
+  CPIB: FaSeedling,
+  CBIB: FaFish,
   CPPIB: FaBox,
   CPOIB: FaPills,
-  CBIB_KAPAL: FaShip,
+  CPIB_KAPAL: FaShip, // Update key
   CDOIB: FaTruck,
   "Total Izin": FaCertificate,
 };
@@ -48,7 +48,7 @@ const deskripsiMap: Record<string, string> = {
   CBIB: "Cara Budi Daya Ikan yang Baik",
   CPPIB: "Cara Pembuatan Pakan Ikan yang Baik",
   CPOIB: "Cara Pembuatan Obat Ikan yang Baik",
-  CBIB_KAPAL: "Cara Penanganan Ikan di Kapal yang Baik",
+  CPIB_KAPAL: "Cara Penanganan Ikan di Kapal yang Baik", // Update key
   CDOIB: "Cara Distribusi Obat Ikan yang Baik",
   "Total Izin": "Total Keseluruhan Sertifikasi Izin",
 };
@@ -57,7 +57,7 @@ const deskripsiMap: Record<string, string> = {
 interface TooltipCardProps {
   title: string;
   text: string;
-  Icon: IconType; // ✅ Ganti any → IconType
+  Icon: IconType;
 }
 
 const TooltipCard: React.FC<TooltipCardProps> = ({ title, text, Icon }) => (
@@ -83,7 +83,7 @@ type ResumeCardProps = {
     CDOIB?: number;
     CPIB?: number;
     CPOIB?: number;
-    CBIB_Kapal?: number;
+    CBIB_Kapal?: number; // Menjaga kompabilitas dengan data backend yang masih "CBIB_Kapal"
     CPPIB?: number;
   } | null;
 };
@@ -98,7 +98,7 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ rekapIzin }) => {
     { label: "CBIB", value: rekapIzin?.CBIB ?? 0 },
     { label: "CPPIB", value: rekapIzin?.CPPIB ?? 0 },
     { label: "CPOIB", value: rekapIzin?.CPOIB ?? 0 },
-    { label: "CBIB_KAPAL", value: rekapIzin?.CBIB_Kapal ?? 0 },
+    { label: "CPIB_KAPAL", value: rekapIzin?.CBIB_Kapal ?? 0 }, // Map data lama ke label baru
     { label: "CDOIB", value: rekapIzin?.CDOIB ?? 0 },
     { label: "Total Izin", value: total },
   ];
@@ -131,7 +131,7 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ rekapIzin }) => {
                     background: `linear-gradient(145deg, var(--from), var(--to))`,
                     "--from": warna.from,
                     "--to": warna.to,
-                  } as React.CSSProperties // ✅ tidak pakai any, gunakan CSSProperties
+                  } as React.CSSProperties
                 }
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300 bg-gradient-to-br from-white/20 to-transparent blur-md rounded-2xl pointer-events-none" />
@@ -150,10 +150,11 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ rekapIzin }) => {
                       <IconComponent size={20} className="text-white" />
                     </div>
                     <span
-                      className={`font-semibold drop-shadow-sm text-center ${s.label === "CBIB_KAPAL"
+                      className={`font-semibold drop-shadow-sm text-center ${
+                        s.label === "CPIB_KAPAL"
                           ? "text-sm leading-tight break-words w-[80px]"
                           : "text-base"
-                        }`}
+                      }`}
                     >
                       {s.label.replace("_", " ")}
                     </span>

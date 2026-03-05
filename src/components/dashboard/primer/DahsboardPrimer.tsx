@@ -24,7 +24,7 @@ export const DashboardPrimer = () => {
       { kode: "032000000068", nama: "CBIB", warna: "#FCD58A" },
       { kode: "032000000014", nama: "CPPIB", warna: "#CF0F47" },
       { kode: "032000000019", nama: "CPOIB", warna: "#004D40" },
-      { kode: "032000000033", nama: "CBIB_KAPAL", warna: "#00ACC1" },
+      { kode: "032000000033", nama: "CPIB Kapal", warna: "#00ACC1" },
       { kode: "032000000036", nama: "CDOIB", warna: "#4BA38A" },
     ],
     [] // kosong → daftar izin ini tetap sama selama komponen hidup

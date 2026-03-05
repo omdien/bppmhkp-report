@@ -10,7 +10,7 @@ export type RekapPrimerItem = {
   CPPIB: number;
   CPOIB: number;
   CDOIB: number;
-  CBIB_Kapal?: number;
+  CBIB_Kapal?: number; // Tetap simpan ini sesuai key dari backend
 };
 
 type ApexAxisChartSeries = {
@@ -28,21 +28,22 @@ const GrafikPrimer: React.FC<GrafikPrimerProps> = ({ rekapPrimer }) => {
       return { categories: [] as string[], series: [] as ApexAxisChartSeries };
     }
 
-    const izinKeys = [
-      "CPIB",
-      "CBIB",
-      "CPPIB",
-      "CPOIB",
-      "CDOIB",
-      "CBIB_Kapal",
+    // Mapping untuk mengubah label yang salah menjadi benar di tampilan
+    const izinMapping = [
+      { key: "CPIB", label: "CPIB" },
+      { key: "CBIB", label: "CBIB" },
+      { key: "CPPIB", label: "CPPIB" },
+      { key: "CPOIB", label: "CPOIB" },
+      { key: "CDOIB", label: "CDOIB" },
+      { key: "CBIB_Kapal", label: "CPIB KAPAL" }, // Data dari CBIB_Kapal, label jadi CPIB KAPAL
     ];
 
     const categories = data.map((item) => item.propinsi.toUpperCase());
 
-    const series = izinKeys.map((key) => ({
-      name: key,
+    const series = izinMapping.map((item) => ({
+      name: item.label, // Menggunakan label yang sudah diperbaiki
       data: data.map(
-        (item) => (item[key as keyof RekapPrimerItem] as number) || 0
+        (dataItem) => (dataItem[item.key as keyof RekapPrimerItem] as number) || 0
       ),
     }));
 
@@ -65,6 +66,7 @@ const GrafikPrimer: React.FC<GrafikPrimerProps> = ({ rekapPrimer }) => {
       bar: {
         horizontal: true,
         borderRadius: 4,
+        barHeight: '80%', // Agar bar tidak terlalu tipis
       },
     },
     xaxis: {
@@ -73,19 +75,29 @@ const GrafikPrimer: React.FC<GrafikPrimerProps> = ({ rekapPrimer }) => {
         style: { colors: "#004D40", fontSize: "12px" },
       },
     },
-    tooltip: { enabled: true },
-    legend: { position: "bottom" },
+    tooltip: { 
+      enabled: true,
+      y: {
+        formatter: (val) => `${val} Izin`
+      }
+    },
+    legend: { 
+      position: "bottom",
+      horizontalAlign: "center",
+      offsetY: 8
+    },
     dataLabels: { enabled: false },
-    colors: ["#0071CE", "#F7C04A", "#CF0F47", "#004D40", "#1E7E68", "#E6D8AE"],
+    // Menyesuaikan warna agar konsisten dengan ResumeCard (CPIB Kapal pakai warna cyan/teal)
+    colors: ["#0D8AF5", "#FCD58A", "#CF0F47", "#00695C", "#4BA38A", "#00ACC1"],
   };
 
   return (
-    <div>
+    <div className="w-full overflow-hidden">
       <Chart
         options={chartOptions}
         series={series}
         type="bar"
-        height={categories.length * 40}
+        height={Math.max(categories.length * 45, 400)} // Dynamic height agar tidak menumpuk jika provinsi banyak
       />
     </div>
   );

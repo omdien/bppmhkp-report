@@ -91,7 +91,8 @@ const TabelPrimer: React.FC<TabelPrimerProps> = ({ data }) => {
                     className={`px-5 py-3 font-semibold text-sm uppercase tracking-wide text-center`}
                   >
                     <span style={{ color: warnaKolom[key] }}>
-                      {key.replace("_", " ")}
+                      {/* {key.replace("_", " ")} */}
+                      {key === "CBIB_Kapal" ? "CPIB Kapal" : key.replace("_", " ")}
                     </span>
                   </TableCell>
                 ))}

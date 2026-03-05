@@ -350,7 +350,6 @@ const AppSidebar: React.FC = () => {
                   priority
                   className="object-contain"
                 />
-
                 <div className="flex flex-col justify-center leading-tight">
                   <div className="text-[25px] font-extrabold leading-none">
                     <span className="text-blue-600">BPP</span>

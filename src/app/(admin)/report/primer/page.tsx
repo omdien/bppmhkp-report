@@ -25,7 +25,7 @@ const izinMap: Record<string, string> = {
   "032000000014": "CPPIB",
   "032000000034": "CPIB",
   "032000000019": "CPOIB",
-  "032000000033": "CBIB Kapal",
+  "032000000033": "CPIB Kapal",
   "032000000036": "CDOIB",
   "032000000068": "CBIB",
 };
@@ -123,7 +123,7 @@ export default function ReportingPrimer() {
       setTotalPagesKapal(result.totalPages);
       setTotalRecordsKapal(result.totalRecords);
     } catch (err) {
-      console.error("Gagal fetch rincian report CBIB Kapal:", err);
+      console.error("Gagal fetch rincian report CPIB Kapal:", err);
     }
   };
 
@@ -271,12 +271,12 @@ export default function ReportingPrimer() {
     return "Rincian Laporan";
   };
 
-  // Label Rincian Report CBIB Kapal
+  // Label Rincian Report CPIB Kapal
   const getRincianTitleKapal = (): string => {
-    if (!filterNamaProvinsi) return "Rincian Laporan CBIB Kapal";
+    if (!filterNamaProvinsi) return "Rincian Laporan CPIB Kapal";
     const ProvProv = filterNamaProvinsi ? filterNamaProvinsi : undefined;
-    if (ProvProv) return `Rincian Laporan CBIB Kapal Provinsi ${ProvProv}`;
-    return "Rincian Laporan CBIB Kapal";
+    if (ProvProv) return `Rincian Laporan CPIB Kapal Provinsi ${ProvProv}`;
+    return "Rincian Laporan CPIB Kapal";
   };
 
   const scrollToRincian = () => {
@@ -353,7 +353,7 @@ export default function ReportingPrimer() {
           <Badge variant="light" color="info" size="md">Total CPOIB</Badge>
           <Badge variant="solid" color="info" size="md">{(rekapIzin?.rekap?.CPOIB ?? 0).toLocaleString("id-ID")}</Badge>
 
-          <Badge variant="light" color="primary" size="md">Total CBIB Kapal</Badge>
+          <Badge variant="light" color="primary" size="md">Total CPIB Kapal</Badge>
           <Badge variant="solid" color="primary" size="md">{(rekapIzin?.rekap?.CBIB_Kapal ?? 0).toLocaleString("id-ID")}</Badge>
 
           <Badge variant="light" color="success" size="md">Total CDOIB</Badge>
