@@ -176,7 +176,6 @@ export default function ReportingPNBP() {
         </Button>
       </div>
 
-
       <div className="overflow-x-auto">
         <TabelPNBPBPK data={data} page={page} limit={limit} />
       </div>

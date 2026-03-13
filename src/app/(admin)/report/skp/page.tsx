@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { useEffect, useState, useRef, useLayoutEffect, useMemo } from "react";
+// import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import Pagination from "@/components/report/ekspor/Pagination";
+
+import DashboardService, {
+  ResumeSKPResponse,
+} from "@/services/DashboardServices";
 import ReportService, {
   ReportSKP,
   RekapSKPProvinsi,
@@ -12,13 +16,15 @@ import TabelRincianSKP from "@/components/report/skp/TabelRincianSKP";
 import { usePeriode } from "@/context/PeriodeContext";
 import { useUser } from "@/context/UserContext";
 import Button from "@/components/ui/button/Button";
-import { FileSpreadsheet} from "lucide-react";
-// import Badge from "@/components/ui/badge/Badge";
+import { FileSpreadsheet } from "lucide-react";
+import Badge from "@/components/ui/badge/Badge";
+import { formatPeriodeLaporan } from "@/utils/formatPeriode";
 
 export default function ReportingSKP() {
   const { periode } = usePeriode();
   const { user } = useUser();
 
+  const [resumeSKP, setResumeSKP] = useState<ResumeSKPResponse | null>(null);
   const [rekapProvinsi, setRekapProvinsi] = useState<RekapSKPProvinsi[]>([]);
   const [rincianSKP, setRincianSKP] = useState<ReportSKP[]>([]);
   const [selectedProvinsi, setSelectedProvinsi] = useState<string | undefined>(
@@ -36,6 +42,16 @@ export default function ReportingSKP() {
   const [exportingSKP, setExportingSKP] = useState(false);
 
   const rincianRef = useRef<HTMLDivElement>(null);
+
+  const fetchResumeSKP = async (startDate?: string, endDate?: string) => {
+    try {
+      const result = await DashboardService.getResumeSKP(startDate, endDate);
+      setResumeSKP(result);
+    } catch (err) {
+      console.error("❌ Gagal fetch resume SKP:", err);
+      setResumeSKP(null);
+    }
+  };
 
   // --- Fetch Rekap ---
   const fetchRekapSKP = async (
@@ -96,6 +112,7 @@ export default function ReportingSKP() {
   useEffect(() => {
     if (!user || !periode.startDate || !periode.endDate) return;
 
+    fetchResumeSKP(periode.startDate, periode.endDate);
     fetchRekapSKP(periode.startDate, periode.endDate, 100);
     fetchRincianSKP(
       periode.startDate,
@@ -204,18 +221,46 @@ export default function ReportingSKP() {
     }
   };
 
+  const labelPeriode = useMemo(() => {
+    if (!periode.startDate || !periode.endDate) return "";
+    return formatPeriodeLaporan(periode.startDate, periode.endDate);
+  }, [periode.startDate, periode.endDate]);
 
   return (
     <div>
-      <PageBreadcrumb pageTitle="Laporan Sertifikasi Kelayakan Pengolahan" />
+      {/* <PageBreadcrumb pageTitle="Laporan Sertifikasi Kelayakan Pengolahan" /> */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100 dark:border-white/[0.05]">
+
+        {/* Sisi Kiri: Judul & Periode */}
+        <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white/90">
+            Laporan Penerbitan Sertifikat Kelayakan Pengolahaan (SKP)
+          </h2>
+          <span className="text-base md:text-lg font-semibold text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 px-4 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
+            {labelPeriode}
+          </span>
+        </div>
+      </div>
 
       <div className="flex justify-between items-center mb-4">
         {/* Badge Section */}
         <div className="flex flex-wrap gap-2">
-          {/* <Badge variant="light" color="success" size="md">Jumlah SKP Terbit</Badge>
+          <Badge variant="light" color="primary" size="md">Jumlah SKP Terbit</Badge>
+          <Badge variant="solid" color="primary" size="md">
+            {(resumeSKP?.sertifikat ?? 0).toLocaleString("id-ID")}
+          </Badge>
+          <Badge variant="light" color="success" size="md">Jumlah UPI</Badge>
           <Badge variant="solid" color="success" size="md">
-            3500
-          </Badge> */}
+            {(resumeSKP?.upi ?? 0).toLocaleString("id-ID")}
+          </Badge>
+          <Badge variant="light" color="error" size="md">Jumlah Propinsi</Badge>
+          <Badge variant="solid" color="error" size="md">
+            {(resumeSKP?.provinsi ?? 0).toLocaleString("id-ID")}
+          </Badge>
+          <Badge variant="light" color="info" size="md">Jumlah Kabupaten</Badge>
+          <Badge variant="solid" color="info" size="md">
+            {(resumeSKP?.kabupaten ?? 0).toLocaleString("id-ID")}
+          </Badge>
         </div>
 
         {/* Button Section */}
