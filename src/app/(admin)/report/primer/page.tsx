@@ -97,6 +97,7 @@ export default function ReportingPrimer() {
         limit
       );
       setRincianData(result.data);
+      console.log("Rincian Report Primer:", result.data);
       setTotalPagesPrimer(result.totalPages);
       setTotalRecordsPrimer(result.totalRecords);
     } catch (err) {
