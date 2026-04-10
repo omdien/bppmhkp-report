@@ -17,7 +17,8 @@ type PropinsiData = {
   CBIB: number;
   CPPIB: number;
   CPOIB: number;
-  CBIB_Kapal: number;
+  CBIB_Kapal?: number; // Tambahkan tanda tanya (?) di sini
+  "CPIB Kapal"?: number; // Tambahkan ini juga sebagai cadangan
   CDOIB: number;
 };
 
@@ -124,7 +125,10 @@ const TabelPrimer: React.FC<TabelPrimerProps> = ({ data }) => {
                       key={key}
                       className="px-5 py-3 text-center font-medium"
                     >
-                      <span style={{ color }}>{row[key as keyof PropinsiData] ?? 0}</span>
+                      <span style={{ color }}>
+                        {/* Cek key asli, kalau kosong cek key dengan spasi, kalau kosong lagi kasih 0 */}
+                        {(row[key as keyof PropinsiData] ?? (row as any)["CPIB Kapal"] ?? 0).toLocaleString("id-ID")}
+                      </span>
                     </TableCell>
                   ))}
                 </TableRow>

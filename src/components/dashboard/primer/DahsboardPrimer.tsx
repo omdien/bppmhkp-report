@@ -7,6 +7,7 @@ import GrafikPrimerKhusus from "./GrafikPrimerKhusus";
 import TabelPrimer from "./TabelPrimer";
 import ReportService, {
     PropinsiIzinPivot,
+    ReportGabunganPivot
 } from "@/services/ReportServices";
 import ComponentCard from "@/components/common/ComponentCard";
 
@@ -15,20 +16,20 @@ export const DashboardPrimer = () => {
     const { user } = useUser();
 
     const [rekapIzin, setRekapIzin] = useState<RekapIzinPrimerResponse | null>(null);
-    const [propinsiData, setPropinsiData] = useState<PropinsiIzinPivot[]>([]);
+    const [propinsiData, setPropinsiData] = useState<ReportGabunganPivot[]>([]);
     const [dataPerIzin, setDataPerIzin] = useState<Record<string, PropinsiPerIzin[]>>({});
 
     const izinList = useMemo(
-    () => [
-      { kode: "032000000034", nama: "CPIB", warna: "#0071CE" },
-      { kode: "032000000068", nama: "CBIB", warna: "#FCD58A" },
-      { kode: "032000000014", nama: "CPPIB", warna: "#CF0F47" },
-      { kode: "032000000019", nama: "CPOIB", warna: "#004D40" },
-      { kode: "032000000033", nama: "CPIB Kapal", warna: "#00ACC1" },
-      { kode: "032000000036", nama: "CDOIB", warna: "#4BA38A" },
-    ],
-    [] // kosong → daftar izin ini tetap sama selama komponen hidup
-  );
+        () => [
+            { kode: "032000000034", nama: "CPIB", warna: "#0071CE" },
+            { kode: "032000000068", nama: "CBIB", warna: "#FCD58A" },
+            { kode: "032000000014", nama: "CPPIB", warna: "#CF0F47" },
+            { kode: "032000000019", nama: "CPOIB", warna: "#004D40" },
+            { kode: "032000000033", nama: "CPIB Kapal", warna: "#00ACC1" },
+            { kode: "032000000036", nama: "CDOIB", warna: "#4BA38A" },
+        ],
+        [] // kosong → daftar izin ini tetap sama selama komponen hidup
+    );
 
     /* ------------------ Fetch Summary ------------------ */
     const fetchSummaryPrimer = async (startDate: string, endDate: string) => {
@@ -42,10 +43,17 @@ export const DashboardPrimer = () => {
 
     const fetchTabelPrimer = async (startDate: string, endDate: string) => {
         try {
-            const result = await ReportService.getPropinsiIzin(startDate, endDate);
+            // Paksa konversi ke string untuk memastikan tidak ada objek yang lewat
+            const sDate = String(startDate);
+            const eDate = String(endDate);
+
+            const response: any = await ReportService.getPropinsiIzin(sDate, eDate);
+
+            // ... sisa kode Bapak ...
+            const result = Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
             setPropinsiData(result);
         } catch (err) {
-            console.error("Gagal fetch propinsi pivot:", err);
+            setPropinsiData([]);
         }
     };
 

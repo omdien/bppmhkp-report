@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PropinsiIzinPivot } from "@/services/ReportServices";
+import { ReportGabunganPivot } from "@/services/ReportServices";
 
 // 🔑 mapping key → kode izin backend
 // ⚠️ CBIB_Kapal & JUMLAH sengaja undefined agar bisa diproses khusus di handler
@@ -31,7 +31,7 @@ type Column<T> = {
   clickable?: boolean;
 };
 
-const columns: Column<PropinsiIzinPivot>[] = [
+const columns: Column<ReportGabunganPivot>[] = [
   { key: "propinsi", label: "Propinsi", width: "w-40" },
   { key: "CPPIB", label: "CPPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPIB", label: "CPIB", align: "right", width: "w-14", clickable: true },
@@ -43,7 +43,7 @@ const columns: Column<PropinsiIzinPivot>[] = [
 ];
 
 type Props = {
-  data: PropinsiIzinPivot[];
+  data: ReportGabunganPivot[];
   page: number;
   limit: number;
   onCellClick?: (
@@ -70,7 +70,7 @@ export default function TabelProvinsiPrimer({
   const rightData = data.slice(mid);
 
   const renderTable = (
-    tableData: PropinsiIzinPivot[],
+    tableData: ReportGabunganPivot[],
     startIndex: number,
     colSpan?: number
   ) => (
@@ -111,7 +111,7 @@ export default function TabelProvinsiPrimer({
                 </TableCell>
 
                 {columns.map((col) => {
-                  const rawValue = row[col.key as keyof PropinsiIzinPivot];
+                  const rawValue = row[col.key as keyof ReportGabunganPivot];
                   const value = col.formatter
                     ? col.formatter(rawValue, row)
                     : rawValue;
@@ -131,7 +131,7 @@ export default function TabelProvinsiPrimer({
                               const kdIzin = izinMapping[col.key as string];
                               const kodePropinsi = row.kode_propinsi;
                               const namaProvinsi =
-                                row.nama_propinsi?.trim() || row.propinsi.trim();
+                                row.propinsi?.trim() || row.propinsi.trim();
                               onCellClick?.(
                                 kdIzin,
                                 kodePropinsi,

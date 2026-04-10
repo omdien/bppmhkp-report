@@ -48,6 +48,18 @@ export interface PropinsiIzinPivot {
   nama_propinsi?: string;
 }
 
+export interface ReportGabunganPivot {
+  kode_propinsi: string;
+  propinsi: string;
+  JUMLAH: number;
+  CPPIB: number;
+  CPIB: number;
+  CPOIB: number;
+  "CPIB Kapal": number; // Sesuaikan dengan Backend yang pakai spasi
+  CDOIB: number;
+  CBIB: number;
+}
+
 export interface RincianReportPrimer {
   idchecklist: number;
   tgl_izin: string;
@@ -217,6 +229,16 @@ export interface ILaporanPNBPResponse {
   pagination: IPagination;
 }
 
+export type PaginatedResponsePrimer<T> = {
+  status: string;
+  data: T[];
+  pagination: {
+    totalRecords: number;
+    totalPages: number;
+    currentPage: number;
+  };
+};
+
 // ----- Service Class -----
 export default class ReportService {
   /**
@@ -262,9 +284,10 @@ export default class ReportService {
   static async getPropinsiIzin(
     tglAwal: string,
     tglAkhir: string
-  ): Promise<PropinsiIzinPivot[]> {
-    return reportFetch<PropinsiIzinPivot[]>(
-      `/primer/pivot-propinsi-izin?startDate=${tglAwal}&endDate=${tglAkhir}`
+  ): Promise<ReportGabunganPivot[]> {
+    // Samakan key dengan Postman: tgl_awal dan tgl_akhir
+    return reportFetch<ReportGabunganPivot[]>(
+      `/gabungan-primer/pivot-propinsi-izin?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`
     );
   }
 
@@ -294,22 +317,23 @@ export default class ReportService {
   static async getRincianReportPrimer(
     tglAwal: string,
     tglAkhir: string,
-    statusChecklist: string = "50",
+    statusChecklist?: string,
     kdIzin?: string,
     kdDaerahPrefix?: string,
     page: number = 1,
     limit: number = 10
-  ): Promise<PaginatedResponse<RincianReportPrimer>> {
-    let url = `/primer/rincian-report?` +
+  ): Promise<PaginatedResponsePrimer<RincianReportPrimer>> {
+
+    let url = `/rincian-primer/report-rincian?` +
       `tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}` +
-      `&status_checklist=${statusChecklist}` +
       `&page=${page}&limit=${limit}`;
 
+    // ← Pindah ke sini, hanya dikirim jika ada nilainya
+    if (statusChecklist) url += `&status_checklist=${statusChecklist}`;
     if (kdIzin) url += `&kd_izin=${kdIzin}`;
     if (kdDaerahPrefix) url += `&kd_daerah_prefix=${kdDaerahPrefix}`;
 
-    // return dengan type PaginatedResponse agar konsisten dengan report ekspor
-    return reportFetch<PaginatedResponse<RincianReportPrimer>>(url);
+    return reportFetch<PaginatedResponsePrimer<RincianReportPrimer>>(url);
   }
 
   /**

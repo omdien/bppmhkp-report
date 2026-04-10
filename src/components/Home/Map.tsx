@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import indonesiaGeoJson from "@/constant/38-Provinsi-Indonesia.json";
 import { usePeriode } from "@/context/PeriodeContext";
 import ReportService, {
-  PropinsiIzinPivot,
+  ReportGabunganPivot,
 } from "@/services/ReportServices";
 import "leaflet/dist/leaflet.css";
 
@@ -23,7 +23,7 @@ type ProvinceProperties = GeoJsonProperties & {
   KODE_PROV?: string | number;
   kode_prov?: string | number;
   Kd_Prov?: string | number;
-  _pivot?: PropinsiIzinPivot | null;
+  _pivot?: ReportGabunganPivot | null;
 };
 
 // ⬅️ Dynamic import components
@@ -41,7 +41,7 @@ const GeoJSON = dynamic(
 );
 
 export default function MapIndonesiaLeaflet() {
-  const [propinsiData, setPropinsiData] = useState<PropinsiIzinPivot[]>([]);
+  const [propinsiData, setPropinsiData] = useState<ReportGabunganPivot[]>([]);
   const { periode, setPeriode } = usePeriode();
   const { startDate, endDate } = periode;
 
@@ -50,12 +50,40 @@ export default function MapIndonesiaLeaflet() {
     fetchPropinsiPivot(startDate, endDate);
   }, [startDate, endDate]);
 
+  // const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
+  //   try {
+  //     const result = await ReportService.getPropinsiIzin(startDate, endDate);
+  //     setPropinsiData(result);
+  //   } catch (err) {
+  //     console.error("Gagal fetch propinsi pivot:", err);
+  //   }
+  // };
+
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
     try {
-      const result = await ReportService.getPropinsiIzin(startDate, endDate);
+      // 1. Paksa konversi ke string untuk keamanan (seperti di Dashboard)
+      const sDate = String(startDate);
+      const eDate = String(endDate);
+
+      // 2. Tambahkan log untuk memantau data yang masuk ke Peta
+      console.log("Peta Fetching:", sDate, "s/d", eDate);
+
+      const response: any = await ReportService.getPropinsiIzin(sDate, eDate);
+
+      // 3. Pastikan penanganan response fleksibel
+      // Jika Backend kirim { data: [...] } ambil .data, jika langsung [...] ambil response
+      const result = Array.isArray(response.data)
+        ? response.data
+        : (Array.isArray(response) ? response : []);
+
       setPropinsiData(result);
+
+      // 4. Log hasil untuk memastikan data Map sudah terisi (opsional)
+      console.log(`Peta: Berhasil memuat ${result.length} data provinsi.`);
+
     } catch (err) {
-      console.error("Gagal fetch propinsi pivot:", err);
+      console.error("Gagal fetch propinsi pivot untuk Map:", err);
+      setPropinsiData([]);
     }
   };
 
@@ -70,7 +98,7 @@ export default function MapIndonesiaLeaflet() {
 
   // ----- Quick lookup map -----
   const pivotMap = useMemo(() => {
-    const m = new Map<number, PropinsiIzinPivot>();
+    const m = new Map<number, ReportGabunganPivot>();
     propinsiData.forEach((p) => {
       const k = Number(p.kode_propinsi);
       if (!Number.isNaN(k)) m.set(k, p);
@@ -113,16 +141,16 @@ export default function MapIndonesiaLeaflet() {
     layer: Layer
   ) => {
     const { PROVINSI, _pivot } = feature.properties ?? {};
-    const pivot: PropinsiIzinPivot | null = _pivot ?? null;
+    const pivot = _pivot ?? null;
     const logoSrc = `/report/images/propinsi/${pivot?.kode_propinsi}.png`;
 
     const data = {
-      CPIB: pivot?.CPIB ?? 0,
-      CBIB: pivot?.CBIB ?? 0,
-      CPPIB: pivot?.CPPIB ?? 0,
-      CPOIB: pivot?.CPOIB ?? 0,
-      "CPIB KAPAL": pivot?.CBIB_Kapal ?? 0,
-      CDOIB: pivot?.CDOIB ?? 0,
+      "CPPIB": pivot?.CPPIB ?? 0,
+      "CPIB": pivot?.CPIB ?? 0,
+      "CPOIB": pivot?.CPOIB ?? 0,
+      "CPIB Kapal": pivot?.["CPIB Kapal"] ?? 0, // Perhatikan Case Sensitive
+      "CDOIB": pivot?.CDOIB ?? 0,
+      "CBIB": pivot?.CBIB ?? 0,
     };
 
     const popupContent = `
