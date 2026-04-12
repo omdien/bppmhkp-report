@@ -80,7 +80,7 @@ const Features = () => {
       <div className="w-[85%] mx-auto">
         {/* Heading */}
         <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 dark:text-white mb-8">
-          Fitur Layanan
+          Fitur Layanan Laporan
         </h2>
 
         {/* Bagian Produk Primer */}

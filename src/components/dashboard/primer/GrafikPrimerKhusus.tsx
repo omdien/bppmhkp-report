@@ -15,10 +15,13 @@ type GrafikPrimerKhususProps = {
   maxWidth?: number;
 };
 
-const toTitleCase = (str: string) =>
-  str
+// PERBAIKAN: Tambahkan pengecekan null/undefined agar tidak error toLowerCase
+const toTitleCase = (str: string | undefined | null) => {
+  if (!str) return "-"; // Mengembalikan strip jika data kosong
+  return str
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 const GrafikPrimerKhusus: React.FC<GrafikPrimerKhususProps> = ({
   data,
@@ -34,7 +37,8 @@ const GrafikPrimerKhusus: React.FC<GrafikPrimerKhususProps> = ({
     );
   }
 
-  const maxValue = Math.max(...data.map((d) => d.value));
+  // Cari nilai maksimal untuk skala bar
+  const maxValue = Math.max(...data.map((d) => d.value)) || 1;
 
   return (
     <div
@@ -66,43 +70,48 @@ const GrafikPrimerKhusus: React.FC<GrafikPrimerKhususProps> = ({
 
       {/* Bars */}
       <div className="flex flex-col gap-3">
-        {data.map((item, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 group"
-            title={toTitleCase(item.label)}
-          >
-            {/* Label kiri */}
-            <div
-              className="text-right truncate text-sm md:text-base font-medium w-[160px]
-                         text-gray-700 dark:text-gray-300"
-            >
-              {toTitleCase(item.label)}
-            </div>
+        {data.map((item, i) => {
+          // Kita simpan hasil formatnya di variabel agar lebih bersih
+          const labelFormatted = toTitleCase(item.label);
 
-            {/* Bar container */}
+          return (
             <div
-              className="flex-1 h-4 rounded-xl overflow-hidden bg-gray-200 dark:bg-white/10 relative"
-              style={{ maxWidth: `${maxWidth}px` }}
+              key={i}
+              className="flex items-center gap-3 group"
+              title={labelFormatted}
             >
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${(item.value / maxValue) * 100}%` }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                style={{
-                  backgroundColor: warna,
-                  height: "100%",
-                }}
-                className="rounded-xl"
-              />
-            </div>
+              {/* Label kiri */}
+              <div
+                className="text-right truncate text-sm md:text-base font-medium w-[160px]
+                           text-gray-700 dark:text-gray-300"
+              >
+                {labelFormatted}
+              </div>
 
-            {/* Nilai kanan */}
-            <div className="w-12 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm md:text-base">
-              {item.value}
+              {/* Bar container */}
+              <div
+                className="flex-1 h-4 rounded-xl overflow-hidden bg-gray-200 dark:bg-white/10 relative"
+                style={{ maxWidth: `${maxWidth}px` }}
+              >
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(item.value / maxValue) * 100}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  style={{
+                    backgroundColor: warna,
+                    height: "100%",
+                  }}
+                  className="rounded-xl"
+                />
+              </div>
+
+              {/* Nilai kanan */}
+              <div className="w-12 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm md:text-base">
+                {item.value}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -13,12 +13,12 @@ import { ReportGabunganPivot } from "@/services/ReportServices";
 // 🔑 mapping key → kode izin backend
 // ⚠️ CBIB_Kapal & JUMLAH sengaja undefined agar bisa diproses khusus di handler
 const izinMapping: Record<string, string | undefined> = {
-  CPPIB: "032000000014",
   CPIB: "032000000034",
+  CBIB: "032000000068",
+  CPPIB: "032000000014",
   CPOIB: "032000000019",
   CBIB_Kapal: undefined, // 🚩 biarkan undefined
   CDOIB: "032000000036",
-  CBIB: "032000000068",
   JUMLAH: undefined,
 };
 
@@ -33,12 +33,12 @@ type Column<T> = {
 
 const columns: Column<ReportGabunganPivot>[] = [
   { key: "propinsi", label: "Propinsi", width: "w-40" },
-  { key: "CPPIB", label: "CPPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPIB", label: "CPIB", align: "right", width: "w-14", clickable: true },
-  { key: "CPOIB", label: "CPOIB", align: "right", width: "w-14", clickable: true },
-  { key: "CBIB_Kapal", label: "CPIB Kapal", align: "right", width: "w-16", clickable: true },
-  { key: "CDOIB", label: "CDOIB", align: "right", width: "w-14", clickable: true },
   { key: "CBIB", label: "CBIB", align: "right", width: "w-14", clickable: true },
+  { key: "CPPIB", label: "CPPIB", align: "right", width: "w-14", clickable: true },
+  { key: "CPOIB", label: "CPOIB", align: "right", width: "w-14", clickable: true },
+  { key: "CPIB Kapal", label: "CPIB Kapal", align: "right", width: "w-16", clickable: true },
+  { key: "CDOIB", label: "CDOIB", align: "right", width: "w-14", clickable: true },
   { key: "JUMLAH", label: "JUMLAH", align: "right", width: "w-16", clickable: true },
 ];
 

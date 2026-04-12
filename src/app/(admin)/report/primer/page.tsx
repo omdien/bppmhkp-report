@@ -415,7 +415,7 @@ export default function ReportingPrimer() {
 
           <Badge variant="light" color="primary" size="md">Total CPIB Kapal</Badge>
           <Badge variant="solid" color="primary" size="md">{(rekapIzin?.rekap?.CBIB_Kapal ?? 0).toLocaleString("id-ID")}</Badge>
-          
+
           <Badge variant="light" color="success" size="md">Total CDOIB</Badge>
           <Badge variant="solid" color="success" size="md">{(rekapIzin?.rekap?.CDOIB ?? 0).toLocaleString("id-ID")}</Badge>
 
@@ -449,11 +449,28 @@ export default function ReportingPrimer() {
         page={1}
         limit={10}
         onCellClick={(kdIzin, kodePropinsi, namaProvinsi, colKey) => {
-          // ... logika OSS tetap aman
+          // 1) Klik kolom izin OSS (kdIzin ada) -> hanya primer
+          if (kdIzin) {
+            const kodePrefix = kodePropinsi?.toString().substring(0, 2);
+            setFilterKdIzin(kdIzin);
+            setFilterKdDaerah(kodePrefix);
+            setFilterNamaProvinsi(undefined); // clear kapal filter
+            setRincianPage(1);
+            setViewMode("primer");
+            setTimeout(scrollToRincian, 100);
+            return;
+          }
 
           // 2) Klik kolom JUMLAH
           if (colKey === "JUMLAH") {
-            // ... alur existing sudah benar
+            const kodePrefix = kodePropinsi?.toString().substring(0, 2);
+            setFilterKdDaerah(kodePrefix);
+            setFilterNamaProvinsi(namaProvinsi);
+            setFilterKdIzin(undefined);
+            setRincianPage(1);
+            setRincianKapalPage(1);
+            setViewMode("both");
+            setTimeout(scrollToRincian, 100);
             return;
           }
 
