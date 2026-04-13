@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-// import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import TabelProvinsiPrimer from "@/components/report/ekspor/TabelProvinsiPrimer";
 import TabelRincianPrimer from "@/components/report/ekspor/TabelRincianPrimer";
 import TabelRincianKapal from "@/components/report/ekspor/TabelRincianPrimerKapal";
 import Pagination from "@/components/report/ekspor/Pagination";
 import ReportService, {
   PropinsiIzinPivot,
-  ReportGabunganPivot,
   RincianReportPrimer,
   CBIBKapal,
 } from "@/services/ReportServices";
@@ -22,7 +20,6 @@ import { FileSpreadsheet } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { formatPeriodeLaporan } from "@/utils/formatPeriode";
 
-// mapping kdIzin → label singkat
 const izinMap: Record<string, string> = {
   "032000000014": "CPPIB",
   "032000000034": "CPIB",
@@ -37,9 +34,7 @@ export default function ReportingPrimer() {
   const { user } = useUser();
 
   const [propinsiData, setPropinsiData] = useState<PropinsiIzinPivot[]>([]);
-  const [rekapIzin, setRekapIzin] = useState<RekapIzinPrimerResponse | null>(
-    null
-  );
+  const [rekapIzin, setRekapIzin] = useState<RekapIzinPrimerResponse | null>(null);
   const [exporting, setExporting] = useState(false);
 
   // ----- State Primer -----
@@ -50,9 +45,7 @@ export default function ReportingPrimer() {
   const [totalRecordsPrimer, setTotalRecordsPrimer] = useState(0);
 
   // ----- State Kapal -----
-  const [rincianCBIBKapalData, setRincianCBIBKapalData] = useState<CBIBKapal[]>(
-    []
-  );
+  const [rincianCBIBKapalData, setRincianCBIBKapalData] = useState<CBIBKapal[]>([]);
   const [rincianKapalPage, setRincianKapalPage] = useState(1);
   const [rincianKapalLimit, setRincianKapalLimit] = useState(20);
   const [totalPagesKapal, setTotalPagesKapal] = useState(0);
@@ -61,105 +54,93 @@ export default function ReportingPrimer() {
   // ----- Filter -----
   const [filterKdIzin, setFilterKdIzin] = useState<string | undefined>();
   const [filterKdDaerah, setFilterKdDaerah] = useState<string | undefined>();
-  const [filterNamaProvinsi, setFilterNamaProvinsi] = useState<
-    string | undefined
-  >();
+  const [filterNamaProvinsi, setFilterNamaProvinsi] = useState<string | undefined>();
 
-  // view mode: primer | kapal | both
   const [viewMode, setViewMode] = useState<"primer" | "kapal" | "both">("both");
 
   // ----- Fetch Pivot -----
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
     try {
-      // 1. Standarisasi konversi ke string (Kunci keberhasilan tadi)
-      const sDate = String(startDate);
-      const eDate = String(endDate);
-
-      // 2. Gunakan sDate dan eDate untuk menjamin parameter terisi
-      const response: any = await ReportService.getPropinsiIzin(sDate, eDate);
-
-      // 3. Ekstrak data dengan pengaman ganda
-      // Kita cek .data dulu, jika tidak ada cek apakah response itu sendiri adalah array
-      const result = Array.isArray(response.data)
-        ? response.data
-        : (Array.isArray(response) ? response : []);
-
-      // 4. Set data dengan Type Casting yang aman
+      const response: any = await ReportService.getPropinsiIzin(startDate, endDate);
+      const result = Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
       setPropinsiData(result as PropinsiIzinPivot[]);
-
-      // Log untuk memastikan di console browser kalau data Page ini sudah 2025
-      console.log(`Page Primer: Terisi ${result.length} data provinsi.`);
-
     } catch (err) {
-      console.error("Gagal fetch propinsi pivot di Page:", err);
-      setPropinsiData([]);
+      console.error("Gagal fetch pivot:", err);
     }
   };
 
-  // ----- Fetch Rincian Primer -----
-  const fetchRincianReport = async (
-    startDate: string,
-    endDate: string,
-    page: number,
-    limit: number,
-    kdIzin?: string,
-    kdDaerah?: string
-  ) => {
+  const fetchRincianReport = async (startDate: string, endDate: string, page: number, limit: number, kdIzin?: string, kdDaerah?: string) => {
     try {
-      const result = await ReportService.getRincianReportPrimer(
-        startDate,
-        endDate,
-        undefined,  // ← ubah "50" menjadi undefined
-        // "50",
-        kdIzin,
-        kdDaerah,
-        page,
-        limit
-      );
+      const result = await ReportService.getRincianReportPrimer(startDate, endDate, undefined, kdIzin, kdDaerah, page, limit);
       setRincianData(result.data);
       setTotalPagesPrimer(result.pagination.totalPages);
       setTotalRecordsPrimer(result.pagination.totalRecords);
     } catch (err) {
-      console.error("Gagal fetch rincian report primer:", err);
+      console.error("Gagal fetch rincian primer:", err);
     }
   };
 
-  // ----- Fetch Rincian Kapal -----
-  const fetchRincianReportCBIBKapal = async (
-    startDate: string,
-    endDate: string,
-    page: number,
-    limit: number,
-    provinsi?: string
-  ) => {
+  const fetchRincianReportCBIBKapal = async (startDate: string, endDate: string, page: number, limit: number, provinsi?: string) => {
     try {
-      const result = await ReportService.getReportCBIBKapal(
-        startDate,
-        endDate,
-        provinsi,
-        page,
-        limit
-      );
+      const result = await ReportService.getReportCBIBKapal(startDate, endDate, provinsi, page, limit);
       setRincianCBIBKapalData(result.data);
       setTotalPagesKapal(result.totalPages);
       setTotalRecordsKapal(result.totalRecords);
     } catch (err) {
-      console.error("Gagal fetch rincian report CPIB Kapal:", err);
+      console.error("Gagal fetch rincian kapal:", err);
     }
   };
 
-  // ----- Fetch Rekap -----
   const fetchRekapIzin = async (startDate: string, endDate: string) => {
     try {
-      const result = await DashboardService.getRekapIzinPrimer(
-        startDate,
-        endDate,
-        1
-      );
+      const result = await DashboardService.getRekapIzinPrimer(startDate, endDate, 1);
       setRekapIzin(result);
     } catch (err) {
-      console.error("Gagal fetch rekap izin:", err);
+      console.error("Gagal fetch rekap:", err);
     }
+  };
+
+  // ----- Export Handlers -----
+  const handleExportExcelPropinsi = async () => {
+    if (!periode.startDate || !periode.endDate) return;
+    try {
+      setExporting(true);
+      const blob = await ReportService.exportPropinsiIzinToExcel(periode.startDate, periode.endDate);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `laporan_per_provinsi_${periode.startDate}_${periode.endDate}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) { console.error(err); } finally { setExporting(false); }
+  };
+
+  const handleExportExcel = async () => {
+    if (!periode.startDate || !periode.endDate) return;
+    try {
+      setExporting(true);
+      const blob = await ReportService.exportRincianReportPrimerToExcel(periode.startDate, periode.endDate, "50", filterKdIzin, filterKdDaerah);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rincian_primer_${periode.startDate}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) { console.error(err); } finally { setExporting(false); }
+  };
+
+  const handleExportKapal = async () => {
+    if (!periode.startDate || !periode.endDate) return;
+    try {
+      setExporting(true);
+      const blob = await ReportService.exportRincianCBIBKapalToExcel(periode.startDate, periode.endDate, filterNamaProvinsi);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rincian_kapal_${filterNamaProvinsi || 'all'}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) { console.error(err); } finally { setExporting(false); }
   };
 
   const handleResetFilter = () => {
@@ -174,231 +155,62 @@ export default function ReportingPrimer() {
 
   const findNamaProvinsi = (kdPrefix?: string): string | undefined => {
     if (!kdPrefix) return undefined;
-
-    const foundPivot = propinsiData.find((p: PropinsiIzinPivot) =>
-      [p.kode_propinsi].some((c) => c?.toString().startsWith(kdPrefix))
-    );
-
-    if (foundPivot)
-      return foundPivot.nama_propinsi || foundPivot.propinsi || undefined;
-
-    if (rincianData.length > 0)
-      return rincianData[0].uraian_propinsi || kdPrefix;
-
-    return kdPrefix;
+    const foundPivot = propinsiData.find((p) => p.kode_propinsi?.toString().startsWith(kdPrefix));
+    return foundPivot?.propinsi || foundPivot?.nama_propinsi || kdPrefix;
   };
 
-  const handleExportExcelPropinsi = async () => {
-    if (!periode.startDate || !periode.endDate) return;
-
-    try {
-      setExporting(true);
-      const blob = await ReportService.exportPropinsiIzinToExcel(
-        periode.startDate,
-        periode.endDate
-      );
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `laporan_sertifikasi_mutu_primer_per_provinsi_${periode.startDate}_${periode.endDate}.xlsx`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Gagal export Excel propinsi izin:", err);
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleExportExcel = async () => {
-    if (!periode.startDate || !periode.endDate) return;
-
-    try {
-      setExporting(true);
-      const blob = await ReportService.exportRincianReportPrimerToExcel(
-        periode.startDate,
-        periode.endDate,
-        "50",
-        filterKdIzin,
-        filterKdDaerah
-      );
-
-      let title = getRincianTitle()
-        .toLowerCase()
-        .replace(/\s+/g, "_")
-        .replace(/[^a-z0-9_]/g, "");
-
-      if (!title) title = "rincian_laporan";
-
-      const fileName = `${title}_${periode.startDate}_${periode.endDate}.xlsx`;
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Gagal export Excel:", err);
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleExportKapal = async () => {
-    if (!periode.startDate || !periode.endDate) return;
-
-    try {
-      setExporting(true);
-      const blob = await ReportService.exportRincianCBIBKapalToExcel(
-        periode.startDate,
-        periode.endDate,
-        filterNamaProvinsi
-      );
-
-      // pakai langsung filterNamaProvinsi
-      let title = "rincian_cbib_kapal";
-      if (filterNamaProvinsi) {
-        title = `rincian_cbib_kapal_provinsi_${filterNamaProvinsi}`
-          .toLowerCase()
-          .replace(/\s+/g, "_")
-          .replace(/[^a-z0-9_]/g, "");
-      }
-
-      const fileName = `${title}_${periode.startDate}_${periode.endDate}.xlsx`;
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Gagal export Excel kapal:", err);
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  // Label Rincian Report Primer (Selain CBIB Kapal)
-  const getRincianTitle = (): string => {
-    if (!filterKdIzin && !filterKdDaerah) return "Rincian Laporan";
-    const izinLabel = filterKdIzin ? izinMap[filterKdIzin] || filterKdIzin : undefined;
-    const provLabel = filterKdDaerah ? findNamaProvinsi(filterKdDaerah) : undefined;
+  const getRincianTitle = () => {
+    const izinLabel = filterKdIzin ? izinMap[filterKdIzin] : "";
+    const provLabel = filterKdDaerah ? findNamaProvinsi(filterKdDaerah) : "";
     if (izinLabel && provLabel) return `Rincian Laporan ${izinLabel} Provinsi ${provLabel}`;
-    if (izinLabel) return `Rincian Laporan ${izinLabel}`;
-    if (provLabel) return `Rincian Laporan Provinsi ${provLabel}`;
-    return "Rincian Laporan";
+    return izinLabel ? `Rincian Laporan ${izinLabel}` : provLabel ? `Rincian Laporan Provinsi ${provLabel}` : "Rincian Laporan";
   };
 
-  // Label Rincian Report CPIB Kapal
-  const getRincianTitleKapal = (): string => {
-    if (!filterNamaProvinsi) return "Rincian Laporan CPIB Kapal";
-    const ProvProv = filterNamaProvinsi ? filterNamaProvinsi : undefined;
-    if (ProvProv) return `Rincian Laporan CPIB Kapal Provinsi ${ProvProv}`;
-    return "Rincian Laporan CPIB Kapal";
+  const getRincianTitleKapal = () => {
+    return filterNamaProvinsi ? `Rincian Laporan CPIB Kapal Provinsi ${filterNamaProvinsi}` : "Rincian Laporan CPIB Kapal";
   };
 
   const scrollToRincian = () => {
     const elem = document.getElementById("rincian-laporan");
     if (elem) {
-      const yOffset = -100; // sesuaikan dengan tinggi navbar
-      const y =
-        elem.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      const y = elem.getBoundingClientRect().top + window.pageYOffset - 100;
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
-  // ----- useEffect -----
   useEffect(() => {
-    if (!user || !periode.startDate || !periode.endDate) return;
-    fetchPropinsiPivot(periode.startDate, periode.endDate);
-    fetchRekapIzin(periode.startDate, periode.endDate);
+    if (user && periode.startDate && periode.endDate) {
+      fetchPropinsiPivot(periode.startDate, periode.endDate);
+      fetchRekapIzin(periode.startDate, periode.endDate);
+    }
   }, [user, periode.startDate, periode.endDate]);
 
   useEffect(() => {
-    if (!user || !periode.startDate || !periode.endDate) return;
-    fetchRincianReport(
-      periode.startDate,
-      periode.endDate,
-      rincianPage,
-      rincianLimit,
-      filterKdIzin,
-      filterKdDaerah
-    );
-  }, [
-    user,
-    periode.startDate,
-    periode.endDate,
-    rincianPage,
-    rincianLimit,
-    filterKdIzin,
-    filterKdDaerah,
-  ]);
+    if (user && periode.startDate && periode.endDate) {
+      fetchRincianReport(periode.startDate, periode.endDate, rincianPage, rincianLimit, filterKdIzin, filterKdDaerah);
+    }
+  }, [user, periode.startDate, periode.endDate, rincianPage, rincianLimit, filterKdIzin, filterKdDaerah]);
 
   useEffect(() => {
-    if (!user || !periode.startDate || !periode.endDate) return;
-    fetchRincianReportCBIBKapal(
-      periode.startDate,
-      periode.endDate,
-      rincianKapalPage,
-      rincianKapalLimit,
-      filterNamaProvinsi
-    );
-  }, [
-    user,
-    periode.startDate,
-    periode.endDate,
-    rincianKapalPage,
-    rincianKapalLimit,
-    filterNamaProvinsi,
-  ]);
+    if (user && periode.startDate && periode.endDate) {
+      fetchRincianReportCBIBKapal(periode.startDate, periode.endDate, rincianKapalPage, rincianKapalLimit, filterNamaProvinsi);
+    }
+  }, [user, periode.startDate, periode.endDate, rincianKapalPage, rincianKapalLimit, filterNamaProvinsi]);
 
   const labelPeriode = useMemo(() => {
-    if (!periode.startDate || !periode.endDate) return "";
-    return formatPeriodeLaporan(periode.startDate, periode.endDate);
+    return periode.startDate && periode.endDate ? formatPeriodeLaporan(periode.startDate, periode.endDate) : "";
   }, [periode.startDate, periode.endDate]);
 
   return (
-    <div>
-      {/* <PageBreadcrumb pageTitle="Laporan Sertifikasi Mutu Primer Per Provinsi" /> */}
-
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100 dark:border-white/[0.05]">
-
-        {/* Sisi Kiri: Judul & Periode */}
-        <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white/90">
-            Laporan Penerbitan Sertifikat Mutu Primer Per Provinsi
-          </h2>
-          <span className="text-base md:text-lg font-semibold text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 px-4 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
-            {labelPeriode}
-          </span>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-white/[0.05]">
+        <div className="flex flex-col md:flex-row md:items-baseline gap-4">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Laporan Penerbitan Sertifikat Mutu Primer Per Provinsi</h2>
+          <span className="text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 px-4 py-1.5 rounded-lg border border-blue-100 font-semibold">{labelPeriode}</span>
         </div>
-
-        {/* Sisi Kanan: Tombol Export */}
-        {/* <Button
-          size="sm"
-          variant="outline"
-          onClick={handleExportExcel}
-          className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50 h-10 shadow-sm transition-all"
-          startIcon={
-            exporting ? (
-              <svg className="animate-spin h-4 w-4 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-              </svg>
-            ) : (
-              <FileSpreadsheet className="w-4 h-4" />
-            )
-          }
-          disabled={exporting}
-        >
-          {exporting ? "Processing..." : "Export to Excel"}
-        </Button> */}
       </div>
 
-      {/* Badge Rekap */}
+      {/* --- REKAP BADGE LENGKAP --- */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex flex-wrap gap-2">
           <Badge variant="light" color="primary" size="md">Total CPIB</Badge>
@@ -423,193 +235,93 @@ export default function ReportingPrimer() {
           <Badge variant="solid" color="error" size="md">{(rekapIzin?.rekap?.total ?? 0).toLocaleString("id-ID")}</Badge>
         </div>
 
-        {/* Export Excel */}
-        <div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50"
-            onClick={handleExportExcelPropinsi}
-            startIcon={exporting ? (
-              <svg className="animate-spin h-4 w-4 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-              </svg>
-            ) : (<FileSpreadsheet className="w-4 h-4" />)}
-            disabled={exporting}
-          >
-            {exporting ? "Processing..." : "Export ke Excel"}
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-green-600 border-green-600 hover:bg-green-50"
+          onClick={handleExportExcelPropinsi}
+          disabled={exporting}
+          startIcon={!exporting && <FileSpreadsheet className="w-4 h-4" />}
+        >
+          {exporting ? "Wait..." : "Export ke Excel"}
+        </Button>
       </div>
 
-      {/* Tabel Provinsi */}
       <TabelProvinsiPrimer
         data={propinsiData}
         page={1}
         limit={10}
         onCellClick={(kdIzin, kodePropinsi, namaProvinsi, colKey) => {
-          // 1) Klik kolom izin OSS (kdIzin ada) -> hanya primer
+          const kodePrefix = kodePropinsi?.toString().substring(0, 2);
           if (kdIzin) {
-            const kodePrefix = kodePropinsi?.toString().substring(0, 2);
             setFilterKdIzin(kdIzin);
             setFilterKdDaerah(kodePrefix);
-            setFilterNamaProvinsi(undefined); // clear kapal filter
-            setRincianPage(1);
-            setViewMode("primer");
-            setTimeout(scrollToRincian, 100);
-            return;
-          }
-
-          // 2) Klik kolom JUMLAH
-          if (colKey === "JUMLAH") {
-            const kodePrefix = kodePropinsi?.toString().substring(0, 2);
+            if (kdIzin === "032000000033") {
+              setFilterNamaProvinsi(namaProvinsi);
+              setRincianKapalPage(1); // Reset Hal Kapal
+              setViewMode("kapal");
+            } else {
+              setFilterNamaProvinsi(undefined);
+              setRincianPage(1); // Reset Hal Primer
+              setViewMode("primer");
+            }
+          } else if (colKey === "JUMLAH") {
             setFilterKdDaerah(kodePrefix);
             setFilterNamaProvinsi(namaProvinsi);
             setFilterKdIzin(undefined);
             setRincianPage(1);
             setRincianKapalPage(1);
             setViewMode("both");
-            setTimeout(scrollToRincian, 100);
-            return;
           }
-
-          // 3) Klik kolom CPIB Kapal (Sesuaikan nama colKey-nya)
-          if (colKey === "CPIB Kapal" || colKey === "CBIB_Kapal") {
-            setFilterNamaProvinsi(namaProvinsi);
-            setFilterKdIzin(undefined);
-            setFilterKdDaerah(undefined);
-            setRincianKapalPage(1);
-            setViewMode("kapal");
-            setTimeout(scrollToRincian, 100);
-            return;
-          }
-
-          // ... rest of logic
+          setTimeout(scrollToRincian, 100);
         }}
       />
 
-      {/* Rincian Primer (tampil bila viewMode !== 'kapal') */}
-      {viewMode !== "kapal" && (
-        <>
-          <div id="rincian-laporan" className="flex items-center mt-8">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-              {getRincianTitle()}
-            </h2>
-            <div className="ml-auto flex space-x-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50"
-                onClick={handleExportExcel}
-                startIcon={<FileSpreadsheet className="w-4 h-4" />}
-                disabled={exporting}
-              >
-                {exporting ? "Processing..." : "Export ke Excel"}
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleResetFilter}>
-                Reset Filter
-              </Button>
+      <div id="rincian-laporan" className="space-y-8 pt-4">
+        {viewMode !== "kapal" && (
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">{getRincianTitle()}</h2>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="text-green-600 border-green-600" onClick={handleExportExcel} disabled={exporting}>
+                  <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleResetFilter}>Reset Filter</Button>
+              </div>
+            </div>
+            <TabelRincianPrimer data={rincianData} page={rincianPage} limit={rincianLimit} />
+            <div className="mt-4 flex justify-center">
+              <Pagination
+                page={rincianPage} totalPages={totalPagesPrimer} totalRecords={totalRecordsPrimer} limit={rincianLimit}
+                onPageChange={(p) => { setRincianPage(p); scrollToRincian(); }}
+                onLimitChange={(l) => { setRincianLimit(l); setRincianPage(1); }}
+              />
             </div>
           </div>
-          <TabelRincianPrimer
-            data={rincianData}
-            page={rincianPage}
-            limit={rincianLimit}
-          />
-          <div className="mt-4 flex justify-center">
-            <Pagination
-              page={rincianPage}
-              limit={rincianLimit}
-              totalRecords={totalRecordsPrimer}
-              totalPages={totalPagesPrimer}
-              onPageChange={(newPage) => {
-                setRincianPage(newPage)
-                scrollToRincian();
-              }}
-              onLimitChange={(newLimit) => {
-                setRincianLimit(newLimit);
-                setRincianPage(1);
-                scrollToRincian();
-              }}
-            />
-          </div>
-        </>
-      )}
+        )}
 
-      {/* Rincian Kapal (tampil bila viewMode !== 'primer') */}
-      {viewMode !== "primer" && (
-        <>
-          <div id="rincian-laporan" className="flex items-center mt-8">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-              {getRincianTitleKapal()}
-            </h2>
-            <div className="ml-auto flex space-x-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50 flex items-center gap-2"
-                onClick={handleExportKapal}
-                startIcon={!exporting ? <FileSpreadsheet className="w-4 h-4" /> : undefined}
-                disabled={exporting}
-              >
-                {exporting ? (
-                  <>
-                    <svg
-                      className="animate-spin h-4 w-4 text-green-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      />
-                    </svg>
-                    Processing...
-                  </>
-                ) : (
-                  "Export ke Excel"
-                )}
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleResetFilter}>
-                Reset Filter
-              </Button>
+        {viewMode !== "primer" && (
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">{getRincianTitleKapal()}</h2>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="text-green-600 border-green-600" onClick={handleExportKapal} disabled={exporting}>
+                  <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleResetFilter}>Reset Filter</Button>
+              </div>
+            </div>
+            <TabelRincianKapal data={rincianCBIBKapalData} page={rincianKapalPage} limit={rincianKapalLimit} />
+            <div className="mt-4 flex justify-center">
+              <Pagination
+                page={rincianKapalPage} totalPages={totalPagesKapal} totalRecords={totalRecordsKapal} limit={rincianKapalLimit}
+                onPageChange={(p) => { setRincianKapalPage(p); scrollToRincian(); }}
+                onLimitChange={(l) => { setRincianKapalLimit(l); setRincianKapalPage(1); }}
+              />
             </div>
           </div>
-          <TabelRincianKapal
-            data={rincianCBIBKapalData}
-            page={rincianKapalPage}
-            limit={rincianKapalLimit}
-          />
-          <div className="mt-4 flex justify-center">
-            <Pagination
-              page={rincianKapalPage}
-              limit={rincianKapalLimit}
-              totalRecords={totalRecordsKapal}
-              totalPages={totalPagesKapal}
-              onPageChange={(newPage) => {
-                setRincianKapalPage(newPage)
-                scrollToRincian();
-              }}
-              onLimitChange={(newLimit) => {
-                setRincianKapalLimit(newLimit);
-                setRincianKapalPage(1);
-                scrollToRincian();
-              }}
-            />
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ const izinMapping: Record<string, string | undefined> = {
   CBIB: "032000000068",
   CPPIB: "032000000014",
   CPOIB: "032000000019",
-  CBIB_Kapal: undefined, // 🚩 biarkan undefined
+  CPIB_Kapal: "032000000033",
   CDOIB: "032000000036",
   JUMLAH: undefined,
 };
@@ -37,7 +37,7 @@ const columns: Column<ReportGabunganPivot>[] = [
   { key: "CBIB", label: "CBIB", align: "right", width: "w-14", clickable: true },
   { key: "CPPIB", label: "CPPIB", align: "right", width: "w-14", clickable: true },
   { key: "CPOIB", label: "CPOIB", align: "right", width: "w-14", clickable: true },
-  { key: "CPIB Kapal", label: "CPIB Kapal", align: "right", width: "w-16", clickable: true },
+  { key: "CPIB_Kapal", label: "CPIB Kapal", align: "right", width: "w-16", clickable: true },
   { key: "CDOIB", label: "CDOIB", align: "right", width: "w-14", clickable: true },
   { key: "JUMLAH", label: "JUMLAH", align: "right", width: "w-16", clickable: true },
 ];

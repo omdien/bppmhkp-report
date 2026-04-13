@@ -42,7 +42,7 @@ export interface PropinsiIzinPivot {
   CPPIB: number;
   CPIB: number;
   CPOIB: number;
-  CBIB_Kapal: number;
+  CPIB_Kapal: number;
   CDOIB: number;
   CBIB: number;
   nama_propinsi?: string;
@@ -55,7 +55,7 @@ export interface ReportGabunganPivot {
   CPPIB: number;
   CPIB: number;
   CPOIB: number;
-  "CPIB Kapal": number; // Sesuaikan dengan Backend yang pakai spasi
+  CPIB_Kapal: number;
   CDOIB: number;
   CBIB: number;
 }

@@ -49,7 +49,6 @@ export const DashboardPrimer = () => {
 
             const response: any = await ReportService.getPropinsiIzin(sDate, eDate);
 
-            // ... sisa kode Bapak ...
             const result = Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
             setPropinsiData(result);
         } catch (err) {
