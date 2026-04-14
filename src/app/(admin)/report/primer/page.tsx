@@ -109,7 +109,7 @@ export default function ReportingPrimer() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `laporan_per_provinsi_${periode.startDate}_${periode.endDate}.xlsx`;
+      a.download = `Penerbitan_sertifikasi_primer_per_provinsi_${periode.startDate}_${periode.endDate}.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) { console.error(err); } finally { setExporting(false); }
@@ -123,7 +123,7 @@ export default function ReportingPrimer() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `rincian_primer_${periode.startDate}.xlsx`;
+      a.download = `${getRincianTitle()}_${periode.startDate}_${periode.endDate}.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) { console.error(err); } finally { setExporting(false); }
@@ -137,7 +137,7 @@ export default function ReportingPrimer() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `rincian_kapal_${filterNamaProvinsi || 'all'}.xlsx`;
+      a.download = `Rincian_CPIB_Kapal_${filterNamaProvinsi || 'all'}_${periode.startDate}_${periode.endDate}.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) { console.error(err); } finally { setExporting(false); }

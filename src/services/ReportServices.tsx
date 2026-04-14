@@ -300,7 +300,8 @@ export default class ReportService {
     tglAkhir: string
   ): Promise<Blob> {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/primer/export-propinsi-izin?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`,
+      // `${process.env.NEXT_PUBLIC_API_URL_REPORT}/primer/export-propinsi-izin?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`,
+      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/gabungan-primer/export-propinsi-izin?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`,
       { credentials: "include" }
     );
 
@@ -352,7 +353,7 @@ export default class ReportService {
     if (kdDaerahPrefix) query += `&kd_daerah_prefix=${kdDaerahPrefix}`;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/primer/export-rincian-report?${query}`,
+      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/rincian-primer/export-rincian?${query}`,
       { credentials: "include" }
     );
 
