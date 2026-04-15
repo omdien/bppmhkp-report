@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import ReportService, { ILaporanPNBPItem } from "@/services/ReportServices";
 import TabelPNBPBPK from "@/components/report/pnbp/TabelPNBP-BPK";
 import Pagination from "@/components/report/ekspor/Pagination";
@@ -25,7 +25,7 @@ export default function ReportingPNBP() {
   const [exporting, setExporting] = useState(false);
 
   // Fetch data paginated
-  const fetchLaporanPNBP = async () => {
+  const fetchLaporanPNBP = useCallback(async () => {
     if (!periode.startDate || !periode.endDate) return;
 
     try {
@@ -38,16 +38,19 @@ export default function ReportingPNBP() {
         undefined,
       );
 
-      // Mapping sesuai response baru backend
       setData(result.data || []);
-
       setTotalPages(result.pagination.totalPages);
       setTotalRecords(result.pagination.total);
 
     } catch (err) {
       console.error("Gagal fetch laporan PNBP Item:", err);
     }
-  };
+  }, [periode.startDate, periode.endDate, page, limit]); // ← deps yang relevan
+
+  // Fetch jika page/limit/periode berubah
+  useEffect(() => {
+    fetchLaporanPNBP();
+  }, [fetchLaporanPNBP]); // ← kini aman & exhaustive
 
   // Export Excel baru
   const handleExportExcel = async () => {
@@ -87,7 +90,7 @@ export default function ReportingPNBP() {
   // Fetch jika page/limit/periode berubah
   useEffect(() => {
     fetchLaporanPNBP();
-  }, [periode, page, limit]);
+  }, [fetchLaporanPNBP]);
 
   const labelPeriode = useMemo(() => {
     if (!periode.startDate || !periode.endDate) return "";

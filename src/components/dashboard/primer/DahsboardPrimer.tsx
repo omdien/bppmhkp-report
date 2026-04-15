@@ -6,7 +6,7 @@ import ResumeCard from "./ResumeCard";
 import GrafikPrimerKhusus from "./GrafikPrimerKhusus";
 import TabelPrimer from "./TabelPrimer";
 import ReportService, {
-    PropinsiIzinPivot,
+    // PropinsiIzinPivot,
     ReportGabunganPivot
 } from "@/services/ReportServices";
 import ComponentCard from "@/components/common/ComponentCard";
@@ -43,15 +43,23 @@ export const DashboardPrimer = () => {
 
     const fetchTabelPrimer = async (startDate: string, endDate: string) => {
         try {
-            // Paksa konversi ke string untuk memastikan tidak ada objek yang lewat
             const sDate = String(startDate);
             const eDate = String(endDate);
 
-            const response: any = await ReportService.getPropinsiIzin(sDate, eDate);
+            const response = await ReportService.getPropinsiIzin(sDate, eDate) as
+                | ReportGabunganPivot[]
+                | { data: ReportGabunganPivot[] }; // ← definisi langsung, tanpa nama type
 
-            const result = Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
+            let result: ReportGabunganPivot[] = [];
+
+            if (Array.isArray(response)) {
+                result = response;
+            } else if (response && Array.isArray(response.data)) {
+                result = response.data;
+            }
+
             setPropinsiData(result);
-        } catch (err) {
+        } catch {
             setPropinsiData([]);
         }
     };

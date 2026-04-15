@@ -61,24 +61,19 @@ export default function MapIndonesiaLeaflet() {
 
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
     try {
-      // 1. Paksa konversi ke string untuk keamanan (seperti di Dashboard)
       const sDate = String(startDate);
       const eDate = String(endDate);
 
-      // 2. Tambahkan log untuk memantau data yang masuk ke Peta
       console.log("Peta Fetching:", sDate, "s/d", eDate);
 
-      const response: any = await ReportService.getPropinsiIzin(sDate, eDate);
+      const response = await ReportService.getPropinsiIzin(sDate, eDate);
 
-      // 3. Pastikan penanganan response fleksibel
-      // Jika Backend kirim { data: [...] } ambil .data, jika langsung [...] ambil response
-      const result = Array.isArray(response.data)
-        ? response.data
-        : (Array.isArray(response) ? response : []);
+      // Handle response fleksibel tanpa any
+      const result: ReportGabunganPivot[] = Array.isArray(response)
+        ? response
+        : (response as { data: ReportGabunganPivot[] }).data ?? [];
 
       setPropinsiData(result);
-
-      // 4. Log hasil untuk memastikan data Map sudah terisi (opsional)
       console.log(`Peta: Berhasil memuat ${result.length} data provinsi.`);
 
     } catch (err) {
@@ -148,7 +143,7 @@ export default function MapIndonesiaLeaflet() {
       "CPPIB": pivot?.CPPIB ?? 0,
       "CPIB": pivot?.CPIB ?? 0,
       "CPOIB": pivot?.CPOIB ?? 0,
-      "CPIB Kapal": pivot?.["CPIB Kapal"] ?? 0, // Perhatikan Case Sensitive
+      "CPIB Kapal": pivot?.CPIB_Kapal ?? 0, // Perhatikan Case Sensitive
       "CDOIB": pivot?.CDOIB ?? 0,
       "CBIB": pivot?.CBIB ?? 0,
     };

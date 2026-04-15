@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import { PropinsiIzinPivot } from "@/services/ReportServices";
 import {
   Table,
   TableBody,
@@ -9,18 +10,18 @@ import {
   TableRow,
 } from "../../ui/table";
 
-type PropinsiData = {
-  kode_propinsi: string;
-  propinsi: string;
-  JUMLAH: number;
-  CPIB: number;
-  CBIB: number;
-  CPPIB: number;
-  CPOIB: number;
-  CBIB_Kapal?: number; // Tambahkan tanda tanya (?) di sini
-  "CPIB Kapal"?: number; // Tambahkan ini juga sebagai cadangan
-  CDOIB: number;
-};
+// type PropinsiData = {
+//   kode_propinsi: string;
+//   propinsi: string;
+//   JUMLAH: number;
+//   CPIB: number;
+//   CBIB: number;
+//   CPPIB: number;
+//   CPOIB: number;
+//   CBIB_Kapal?: number; // Tambahkan tanda tanya (?) di sini
+//   "CPIB Kapal"?: number; // Tambahkan ini juga sebagai cadangan
+//   CDOIB: number;
+// };
 
 const warnaKolom: Record<string, string> = {
   CPIB: "#0071CE",
@@ -59,8 +60,10 @@ const LogoPropinsi = ({
   );
 };
 
+type PropinsiIzinPivotRecord = PropinsiIzinPivot & Record<string, string | number>;
+
 interface TabelPrimerProps {
-  data: PropinsiData[];
+  data: PropinsiIzinPivot[];
 }
 
 const TabelPrimer: React.FC<TabelPrimerProps> = ({ data }) => {
@@ -120,17 +123,17 @@ const TabelPrimer: React.FC<TabelPrimerProps> = ({ data }) => {
                   </TableCell>
 
                   {/* Kolom nilai */}
-                  {Object.entries(warnaKolom).map(([key, color]) => (
-                    <TableCell
-                      key={key}
-                      className="px-5 py-3 text-center font-medium"
-                    >
-                      <span style={{ color }}>
-                        {/* Cek key asli, kalau kosong cek key dengan spasi, kalau kosong lagi kasih 0 */}
-                        {(row[key as keyof PropinsiData] ?? (row as any)["CPIB Kapal"] ?? 0).toLocaleString("id-ID")}
-                      </span>
-                    </TableCell>
-                  ))}
+                  {Object.entries(warnaKolom).map(([key, color]) => {
+                    const value = ((row as PropinsiIzinPivotRecord)[key] as number) ?? 0;
+
+                    return (
+                      <TableCell key={key} className="px-5 py-3 text-center font-medium">
+                        <span style={{ color }}>
+                          {value.toLocaleString("id-ID")}
+                        </span>
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))}
             </TableBody>

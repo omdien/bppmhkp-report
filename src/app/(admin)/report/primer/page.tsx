@@ -61,11 +61,20 @@ export default function ReportingPrimer() {
   // ----- Fetch Pivot -----
   const fetchPropinsiPivot = async (startDate: string, endDate: string) => {
     try {
-      const response: any = await ReportService.getPropinsiIzin(startDate, endDate);
-      const result = Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
-      setPropinsiData(result as PropinsiIzinPivot[]);
+      const response = await ReportService.getPropinsiIzin(startDate, endDate) as { data: PropinsiIzinPivot[] } | PropinsiIzinPivot[];
+
+      let result: PropinsiIzinPivot[] = [];
+
+      if (Array.isArray(response)) {
+        result = response;
+      } else if (response && Array.isArray(response.data)) {
+        result = response.data;
+      }
+
+      setPropinsiData(result);
     } catch (err) {
       console.error("Gagal fetch pivot:", err);
+      setPropinsiData([]);
     }
   };
 
