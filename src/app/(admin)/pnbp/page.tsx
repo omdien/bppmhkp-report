@@ -77,6 +77,8 @@ export default function ReportingPNBP() {
 
   // ✅ Handler Export Excel
   const handleExportExcel = async () => {
+    console.log("user:", user);           // ← cek ini
+    console.log("kd_unit:", user?.kd_unit);
     if (!user || !periode.startDate || !periode.endDate) return;
 
     try {

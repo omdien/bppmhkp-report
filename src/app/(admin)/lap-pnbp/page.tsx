@@ -6,7 +6,7 @@ import TabelPNBPBPK from "@/components/report/pnbp/TabelPNBP-BPK";
 import Pagination from "@/components/report/ekspor/Pagination";
 // import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { usePeriode } from "@/context/PeriodeContext";
-// import { useUser } from "@/context/UserContext";
+import { useUser } from "@/context/UserContext";
 import Button from "@/components/ui/button/Button";
 import { FileSpreadsheet } from "lucide-react";
 import { formatPeriodeLaporan } from "@/utils/formatPeriode";
@@ -20,10 +20,11 @@ export default function ReportingPNBP() {
   const [totalRecords, setTotalRecords] = useState(0);
 
   const { periode } = usePeriode();
-  // const { user } = useUser();
+  const { user } = useUser();
 
   const [exporting, setExporting] = useState(false);
 
+  // Fetch data paginated
   // Fetch data paginated
   const fetchLaporanPNBP = useCallback(async () => {
     if (!periode.startDate || !periode.endDate) return;
@@ -34,8 +35,7 @@ export default function ReportingPNBP() {
         periode.endDate,
         page,
         limit,
-        undefined,
-        undefined,
+        user?.kd_unit,   // ✅ dari sesi login
       );
 
       setData(result.data || []);
@@ -43,9 +43,9 @@ export default function ReportingPNBP() {
       setTotalRecords(result.pagination.total);
 
     } catch (err) {
-      console.error("Gagal fetch laporan PNBP Item:", err);
+      console.error("Gagal fetch laporan PNBP:", err);
     }
-  }, [periode.startDate, periode.endDate, page, limit]); // ← deps yang relevan
+  }, [periode.startDate, periode.endDate, page, limit, user?.kd_unit]);
 
   // Fetch jika page/limit/periode berubah
   useEffect(() => {
@@ -63,6 +63,7 @@ export default function ReportingPNBP() {
       const blob = await ReportService.exportLaporanPNBP(
         periode.startDate,
         periode.endDate,
+        user?.kd_unit,   // ✅ dari sesi login
         undefined, // negara
         undefined  // kd_tarif
       );
@@ -71,7 +72,7 @@ export default function ReportingPNBP() {
       const a = document.createElement("a");
 
       a.href = url;
-      a.download = `laporan_pnbp_${periode.startDate}_${periode.endDate}.xlsx`;
+      a.download = `laporan_pnbp_${user?.kd_unit}_${periode.startDate}_${periode.endDate}.xlsx`;
       a.click();
 
       window.URL.revokeObjectURL(url);

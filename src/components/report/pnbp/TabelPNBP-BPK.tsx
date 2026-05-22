@@ -20,7 +20,7 @@ const columns: Column<ILaporanPNBPItem>[] = [
   { key: "nomor_aju", label: "NO AJU" },
   { key: "nm_pendek", label: "NAMA UPT" },
   { key: "nm_pengirim", label: "PELAKU USAHA" },
-  { key: "ekspor", label: "KEGIATAN" },
+  { key: "jenis", label: "KEGIATAN" },
   { key: "uraian_negara", label: "NEGARA" },
   { key: "no_pnbp", label: "NO PNBP" },
 
@@ -30,7 +30,7 @@ const columns: Column<ILaporanPNBPItem>[] = [
     formatter: (v) =>
       v ? new Date(v as string).toLocaleDateString("id-ID") : "-",
   },
-
+  { key: "no_bill", label: "KODE BILLING" },
   { key: "kd_tarif", label: "KD TARIF" },
   { key: "nm_tarif", label: "URAIAN TARIF" },
 

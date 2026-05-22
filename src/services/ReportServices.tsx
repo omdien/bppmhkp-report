@@ -200,12 +200,14 @@ export type PaginatedResponse<T> = {
 
 export interface ILaporanPNBPItem {
   nomor_aju: string;
+  kd_unit: string;
   nm_pendek: string;
   nm_pengirim: string;
-  ekspor: string;
+  jenis: string;
   uraian_negara: string;
   no_pnbp: string;
   tgl_pnbp: string;
+  no_bill: string;
   kd_tarif: string;
   nm_tarif: string;
   volume: string;
@@ -213,6 +215,7 @@ export interface ILaporanPNBPItem {
   tarif: string;
   total_tarif: string;
   pp: string;
+  status: string;
 }
 
 export interface IPagination {
@@ -244,39 +247,130 @@ export default class ReportService {
   /**
    * Ambil data report ekspor dengan pagination + filter tanggal
    */
+  // static async getEksporReport(
+  //   kdUpt: string,
+  //   tglAwal: string,
+  //   tglAkhir: string,
+  //   page: number = 1,
+  //   limit: number = 10
+  // ): Promise<PaginatedResponse<ReportEkspor>> {
+  //   return reportFetch<PaginatedResponse<ReportEkspor>>(
+  //     `/ekspor/tr-report-ekspor/${kdUpt}?page=${page}&limit=${limit}&tglAwal=${tglAwal}&tglAkhir=${tglAkhir}`
+  //   );
+  // }
+
+  /**
+   * Ambil data report SMKHP dengan pagination + filter
+   * Route: GET /smkhp/:kdUpt?page=&limit=&tglAwal=&tglAkhir=&negara=&upt=&komoditas=
+   */
   static async getEksporReport(
     kdUpt: string,
     tglAwal: string,
     tglAkhir: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 20,
+    negara: string = "",
+    upt: string = "",
+    komoditas: string = ""
   ): Promise<PaginatedResponse<ReportEkspor>> {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      tglAwal,
+      tglAkhir,
+      ...(negara && { negara }),
+      ...(upt && { upt }),
+      ...(komoditas && { komoditas }),
+    });
+
     return reportFetch<PaginatedResponse<ReportEkspor>>(
-      `/ekspor/tr-report-ekspor/${kdUpt}?page=${page}&limit=${limit}&tglAwal=${tglAwal}&tglAkhir=${tglAkhir}`
+      `/smkhp/${kdUpt}?${params.toString()}`
     );
   }
+
 
   /**
    * Export laporan ekspor ke Excel
    */
+  // static async exportEksporReportToExcel(
+  //   kdUpt: string,
+  //   tglAwal: string,
+  //   tglAkhir: string
+  // ): Promise<Blob> {
+  //   const res = await fetch(
+  //     `${process.env.NEXT_PUBLIC_API_URL_REPORT}/ekspor/tr-report-ekspor-excell/${kdUpt}?tglAwal=${tglAwal}&tglAkhir=${tglAkhir}`,
+  //     {
+  //       credentials: "include",
+  //     }
+  //   );
+
+  //   if (!res.ok) {
+  //     throw new Error(`Gagal export excel: ${res.status} ${res.statusText}`);
+  //   }
+
+  //   return res.blob();
+  // }
+
+  /**
+  * Ambil data report SMKHP dengan pagination + filter
+  * Route: GET /smkhp/:kdUpt?page=&limit=&tglAwal=&tglAkhir=&negara=&upt=&komoditas=
+  */
+  // static async getEksporReport(
+  //   kdUpt: string,
+  //   tglAwal: string,
+  //   tglAkhir: string,
+  //   page: number = 1,
+  //   limit: number = 20,
+  //   negara: string = "",
+  //   upt: string = "",
+  //   komoditas: string = ""
+  // ): Promise<PaginatedResponse<ReportEkspor>> {
+  //   const params = new URLSearchParams({
+  //     page: String(page),
+  //     limit: String(limit),
+  //     tglAwal,
+  //     tglAkhir,
+  //     ...(negara && { negara }),
+  //     ...(upt && { upt }),
+  //     ...(komoditas && { komoditas }),
+  //   });
+
+  //   return reportFetch<PaginatedResponse<ReportEkspor>>(
+  //     `/smkhp/${kdUpt}?${params.toString()}`
+  //   );
+  // }
+
+  /**
+   * Export laporan SMKHP ke Excel (ikut filter aktif)
+   * Route: GET /smkhp/:kdUpt/export?tglAwal=&tglAkhir=&negara=&upt=&komoditas=
+   */
   static async exportEksporReportToExcel(
     kdUpt: string,
     tglAwal: string,
-    tglAkhir: string
+    tglAkhir: string,
+    negara: string = "",
+    upt: string = "",
+    komoditas: string = ""
   ): Promise<Blob> {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_REPORT}/ekspor/tr-report-ekspor-excell/${kdUpt}?tglAwal=${tglAwal}&tglAkhir=${tglAkhir}`,
-      {
-        credentials: "include",
-      }
-    );
+    const params = new URLSearchParams({
+      tglAwal,
+      tglAkhir,
+      ...(negara && { negara }),
+      ...(upt && { upt }),
+      ...(komoditas && { komoditas }),
+    });
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/smkhp/${kdUpt}/export?${params.toString()}`;
+
+    const res = await fetch(url, { credentials: "include" });
 
     if (!res.ok) {
-      throw new Error(`Gagal export excel: ${res.status} ${res.statusText}`);
+      throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
     }
 
     return res.blob();
   }
+
 
   /**
    * Ambil pivot propinsi-izin
@@ -556,6 +650,7 @@ export default class ReportService {
     endDate: string,
     page: number = 1,
     limit: number = 20,
+    kdUpt?: string,      // ✅ ditambahkan
     negara?: string,
     kd_tarif?: string
   ): Promise<ILaporanPNBPResponse> {
@@ -563,52 +658,43 @@ export default class ReportService {
     const params = new URLSearchParams();
     if (startDate) params.append("startDate", startDate);
     if (endDate) params.append("endDate", endDate);
+    if (kdUpt) params.append("kdUpt", kdUpt);      // ✅
     if (negara) params.append("negara", negara);
     if (kd_tarif) params.append("kd_tarif", kd_tarif);
-
-    // pagination
     params.append("page", page.toString());
     params.append("limit", limit.toString());
 
     const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/lap-pnbp/laporan-pnbp?${params.toString()}`;
 
     const res = await fetch(url, { credentials: "include" });
-
     if (!res.ok) {
       throw new Error(`Gagal mengambil data PNBP: ${res.status} ${res.statusText}`);
     }
-
     return res.json();
   }
 
-  // --- EXPORT EXCEL PNBP (baruuuu) ---
   static async exportLaporanPNBP(
     startDate: string,
     endDate: string,
+    kdUpt?: string,      // ✅ ditambahkan
     negara?: string,
     kd_tarif?: string
   ): Promise<Blob> {
 
     const params = new URLSearchParams();
-
-    params.append("startDate", startDate);
-    params.append("endDate", endDate);
-
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (kdUpt) params.append("kdUpt", kdUpt);      // ✅
     if (negara) params.append("negara", negara);
     if (kd_tarif) params.append("kd_tarif", kd_tarif);
 
     const url = `${process.env.NEXT_PUBLIC_API_URL_REPORT}/lap-pnbp/export-excel?${params.toString()}`;
 
-    const res = await fetch(url, {
-      method: "GET",
-      credentials: "include",
-    });
-
+    const res = await fetch(url, { credentials: "include" });
     if (!res.ok) {
       throw new Error(`Gagal export Excel: ${res.status} ${res.statusText}`);
     }
-
-    return await res.blob();
+    return res.blob();
   }
 
 }
