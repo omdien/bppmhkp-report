@@ -15,7 +15,7 @@ interface User {
   nama: string;
   email: string;
   kd_unit: string;
-  nama_unit?: string | null;
+  nm_pendek_baru?: string | null;
 }
 
 interface UserContextType {
@@ -84,7 +84,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             nama: raw.NAMA,
             email: raw.EMAIL,
             kd_unit: raw.KD_UNIT,
-            nama_unit: raw.upt?.NM_UNIT ?? null,
+            nm_pendek_baru: raw.upt?.NM_PENDEK_BARU ?? null,
           };
           setUser(normalized);
         } else {

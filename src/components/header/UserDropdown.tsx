@@ -92,7 +92,7 @@ export default function UserDropdown() {
             {user?.email ?? (initializing ? "Loading..." : "Anonymous")}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {user?.nama_unit ?? (initializing ? "Loading..." : "Anonymous")}
+            {user?.nm_pendek_baru ?? (initializing ? "Loading..." : "Anonymous")}
           </span>
         </div>
 

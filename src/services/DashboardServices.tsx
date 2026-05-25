@@ -121,10 +121,19 @@ export default class DashboardService {
   static async getSummaryEkspor(
     kdUpt: string,
     tglAwal: string,
-    tglAkhir: string
+    tglAkhir: string,
+    negara = "",
+    upt = "",
+    komoditas = ""
   ): Promise<SummaryEkspor> {
+    const params = new URLSearchParams();
+    if (negara) params.set("negara", negara);
+    if (upt) params.set("upt", upt);
+    if (komoditas) params.set("komoditas", komoditas);
+
+    const query = params.toString() ? `?${params.toString()}` : "";
     return dashboardFetch<SummaryEkspor>(
-      `/ekspor/summary/${kdUpt}/${tglAwal}/${tglAkhir}`
+      `/ekspor/summary/${kdUpt}/${tglAwal}/${tglAkhir}${query}`
     );
   }
 
@@ -289,7 +298,7 @@ export default class DashboardService {
     return dashboardFetch<KomposisiOlahanSKP[]>(
       `/skp/komposisi-olahan?${params.toString()}`
     );
-  } 
+  }
 
   // 🟢 9️⃣ Top 10 Kabupaten/Kota
   static async getTopKabupatenSKP(

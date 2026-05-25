@@ -152,6 +152,11 @@ export default function ReportingPNBP() {
         <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white/90">
             Laporan PNBP
+            {!["00.1", "00.2", "00.3"].includes(user?.kd_unit ?? "") && user?.nm_pendek_baru && (
+              <span className="text-gray-500 dark:text-white/50 font-medium ml-2">
+                — {user.nm_pendek_baru}
+              </span>
+            )}
           </h2>
           <span className="text-base md:text-lg font-semibold text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 px-4 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
             {labelPeriode}
