@@ -59,7 +59,7 @@ export default function LoginPage() {
         nama: userData.NAMA,
         email: userData.EMAIL,
         kd_unit: userData.KD_UNIT,
-        nama_unit: userData.upt?.NM_UNIT ?? null,
+        nm_pendek_baru: userData.upt?.NM_PENDEK_BARU ?? null,
       });
 
       router.replace("/dashboard");
